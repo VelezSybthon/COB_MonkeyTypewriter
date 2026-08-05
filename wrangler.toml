@@ -1,0 +1,9 @@
+# Cloudflare Worker 配置：以仓库根目录作为静态资源目录，
+# worker.js 作为未命中资源的回退处理。
+name = "cob-monkeytypewriter"
+main = "worker.js"
+compatibility_date = "2025-01-01"
+
+[assets]
+directory = "./"
+binding = "ASSETS"

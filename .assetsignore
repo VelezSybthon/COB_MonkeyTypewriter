@@ -1,0 +1,15 @@
+# 不上传到 Workers Assets 的文件（.gitignore 格式）
+# 站点文件仅包含：index.html、css/、js/
+worker.js
+wrangler.toml
+.assetsignore
+.gitignore
+README.md
+reasonix.toml
+boc_type.iml
+package.json
+package-lock.json
+node_modules/
+test/
+.idea/
+.reasonix/
