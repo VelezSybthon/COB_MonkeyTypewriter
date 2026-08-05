@@ -1,0 +1,12 @@
+{
+  "name": "boc-type-training",
+  "version": "1.0.0",
+  "private": true,
+  "description": "国中行银综合录入训练网页（纯静态，无需构建）",
+  "devDependencies": {
+    "jsdom": "^25.0.1"
+  },
+  "scripts": {
+    "test": "node test/smoke.test.js"
+  }
+}
