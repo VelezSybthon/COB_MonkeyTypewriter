@@ -87,7 +87,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(document.querySelectorAll('.input-table input.error').length === 2, '恰好 2 个错误单元格标红框红字');
   const detail = result.textContent;
   assert(detail.includes('第 2 行「姓名」') && detail.includes('错误名字'), '明细指出第 2 行姓名不一致');
-  assert(detail.includes('第 3 行「币种代码」编号不存在'), '明细指出第 3 行币种代码编号不存在');
+  assert(detail.includes('第 3 行「币别」编号不存在'), '明细指出第 3 行币别编号不存在');
   assert(rows[1].querySelectorAll('input')[0].classList.contains('error'), '不一致单元格标红');
 
   console.log('6) 币别格式校验（填字母代码）');
@@ -147,7 +147,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '龙星通', '第 1 套预录首行姓名');
   document.querySelectorAll('.bank-btn')[1].click();
   assert(document.querySelector('.bank-btn.active')?.dataset.bank === '1', '点击后切换到第 2 套');
-  assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '张海涛', '第 2 套预录首行姓名');
+  assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '罗星眠', '第 2 套预录首行姓名');
   assert(document.getElementById('timerValue').textContent === '10:00' && document.getElementById('timerState').textContent === '未开始', '切换题库后计时重置');
   assert([...document.querySelectorAll('.input-table input')].every(i => i.value === ''), '切换题库后录入清空');
   document.querySelectorAll('.bank-btn')[2].click();
@@ -190,13 +190,13 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(document.activeElement === lastInput, '最后一行行末 Tab 停在原地（不跳出表格）');
 
   console.log('16) 页面底部版本号');
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.6'), '训练页底部显示版本 v1.0.6');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.7'), '训练页底部显示版本 v1.0.7');
   window.location.hash = '#/chinese-training';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.6'), '中文训练页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.7'), '中文训练页底部显示版本号');
   window.location.hash = '#/new-practice-1';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.6'), '占位页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.7'), '占位页底部显示版本号');
 
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);
