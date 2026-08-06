@@ -229,7 +229,13 @@ body.sidebar-collapsed .nav-item.active::before { left: -6px; }
   padding-left: 12px;
   line-height: 1.4;
 }
-.page-head p { margin-top: 8px; color: var(--text-sub); font-size: 13px; }
+.page-head p {
+  margin-top: 8px;
+  color: var(--text-sub);
+  font-size: 13px;
+  /* 与 h2 标题文字对齐（5px 左侧红条 + 12px 内边距），不贴边 */
+  padding-left: 17px;
+}
 
 /* 区块卡片 */
 .section {
