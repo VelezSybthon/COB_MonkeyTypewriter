@@ -74,6 +74,17 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   const result = document.getElementById('checkResult');
   assert(result.textContent.includes('正确 50 条') && result.textContent.includes('错误 0 条'), '统计显示正确 50 条、错误 0 条');
   assert(result.textContent.includes('准确率 100.0%'), '准确率 100.0%');
+  const expectedTotal = preData.reduce((s, row) => s + row.slice(1).reduce((a, v) => a + v.length, 0), 0);
+  assert(result.textContent.includes('总字数 ' + expectedTotal), `总字数统计正确（${expectedTotal}）`);
+  assert(result.textContent.includes('错字 0') && result.textContent.includes('差错率 0.0 字/千字'), '全对时错字 0、差错率 0.0 字/千字');
+  assert(!!document.getElementById('gradeModal')?.classList.contains('show'), '提交后弹出成绩弹窗');
+  const modalText = document.getElementById('gradeModal').textContent;
+  assert(modalText.includes('录入速度') && modalText.includes('字/分钟'), '弹窗展示录入速度');
+  assert(modalText.includes((expectedTotal / 10).toFixed(1) + ' 字/分钟'), `录入速度 = 总字数 ÷ 10 分钟（${(expectedTotal / 10).toFixed(1)}）`);
+  assert(modalText.includes('差错率') && modalText.includes('字/千字'), '弹窗展示差错率');
+  assert(modalText.includes('合格 · 一级'), '全对且高速 → 一级（弹窗判定）');
+  document.getElementById('modalClose').click();
+  assert(!document.getElementById('gradeModal').classList.contains('show'), '点击关闭后弹窗消失');
   assert(!!result.querySelector('.bar.ok'), '显示绿色「核对通过」结果条');
   assert(document.querySelectorAll('.input-table input.error').length === 0, '全对时无错误标红');
 
@@ -88,6 +99,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   const detail = result.textContent;
   assert(detail.includes('第 2 行「姓名」') && detail.includes('错误名字'), '明细指出第 2 行姓名不一致');
   assert(detail.includes('第 3 行「币别」编号不存在'), '明细指出第 3 行币别编号不存在');
+  assert(result.textContent.includes('错字 6'), '错字统计：姓名 4 字（含多打的字）+ 币别 2 字 = 6');
   assert(rows[1].querySelectorAll('input')[0].classList.contains('error'), '不一致单元格标红');
 
   console.log('6) 币别格式校验（填字母代码）');
@@ -151,7 +163,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(document.getElementById('timerValue').textContent === '10:00' && document.getElementById('timerState').textContent === '未开始', '切换题库后计时重置');
   assert([...document.querySelectorAll('.input-table input')].every(i => i.value === ''), '切换题库后录入清空');
   document.querySelectorAll('.bank-btn')[2].click();
-  assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '陈志明', '第 3 套预录首行姓名');
+  assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '申屠缤', '第 3 套预录首行姓名');
   document.querySelectorAll('.bank-btn')[0].click();
   assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '龙星通', '切回第 1 套');
 
@@ -189,14 +201,23 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   lastInput.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
   assert(document.activeElement === lastInput, '最后一行行末 Tab 停在原地（不跳出表格）');
 
-  console.log('16) 页面底部版本号');
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.7'), '训练页底部显示版本 v1.0.7');
+  console.log('16) 漏打字符不计错字（差错率不超过 1000 字/千字）');
+  const curRows = [...document.querySelectorAll('.input-table tbody tr')];
+  curRows[0].querySelectorAll('input')[0].focus(); // 启动计时（切题库后已重置）
+  curRows[3].querySelectorAll('input')[1].value = '123'; // 第 4 行身份证只打 3 位（期望 18 位）
+  document.getElementById('btnSubmit').click();
+  const leakResult = document.getElementById('checkResult').textContent;
+  assert(leakResult.includes('错字 3'), `漏打 15 位不计错字，错字仅 3（实测：${leakResult.match(/错字 (\d+)/)?.[1]}）`);
+  assert(leakResult.includes('差错率 1000.0 字/千字'), '差错率 3/3 × 1000 = 1000.0 字/千字');
+
+  console.log('17) 页面底部版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.9'), '训练页底部显示版本 v1.0.9');
   window.location.hash = '#/chinese-training';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.7'), '中文训练页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.9'), '中文训练页底部显示版本号');
   window.location.hash = '#/new-practice-1';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.7'), '占位页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.9'), '占位页底部显示版本号');
 
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);

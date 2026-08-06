@@ -406,6 +406,44 @@ table.data-table {
 /* 留空练习页的主体占位高度 */
 .empty-body { min-height: 160px; }
 
+/* ---------------- 成绩弹窗 ---------------- */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 33, .45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.modal-overlay.show { display: flex; }
+.modal {
+  background: #fff;
+  border-radius: 12px;
+  padding: 26px 34px;
+  min-width: 320px;
+  box-shadow: 0 12px 40px rgba(20, 24, 33, .3);
+  text-align: center;
+}
+.modal h3 {
+  color: var(--boc-red);
+  font-size: 18px;
+  margin-bottom: 16px;
+}
+.modal-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 2px;
+  font-size: 15px;
+  border-bottom: 1px dashed var(--border);
+}
+.modal-row span { color: var(--text-sub); }
+.modal-row b { font-size: 16px; }
+.modal-row b.pass { color: var(--ok); }
+.modal-row b.fail { color: var(--err); }
+.modal .btn { margin-top: 18px; width: 100%; }
+
 /* 按钮 */
 .actions { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; margin-top: 16px; }
 .btn {

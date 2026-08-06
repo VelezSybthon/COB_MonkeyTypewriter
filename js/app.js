@@ -241,26 +241,56 @@ const BANK_2 = [
 
 /* 第 3 套题库（20 条 mock） */
 const BANK_3 = [
-  { no: '1',  name: '陈志明',   id: '110101199204125678', cur: { code: 'THB', num: '84' }, amount: '187654', type: '5527', acct: '2284', term: '18', addr: '北京市东城区东直门外大街42号宇飞大厦8层801室' },
-  { no: '2',  name: '李建国',     id: '620102198801025678', cur: { code: 'NZD', num: '87' }, amount: '234567', type: '5529', acct: '2387', term: '36', addr: '甘肃省兰州市城关区张掖路246号兰州中心12层1203室' },
-  { no: '3',  name: '杜海燕',     id: '510105199310145678', cur: { code: 'PHP', num: '82' }, amount: '76543',  type: '5525', acct: '2482', term: '06', addr: '四川省成都市青羊区顺城大街289号富力中心7层702室' },
-  { no: '4',  name: '白志强',   id: '610102198806215678', cur: { code: 'MOP', num: '81' }, amount: '158432', type: '5523', acct: '2581', term: '12', addr: '陕西省西安市新城区解放路77号民乐园万达广场6楼601室' },
-  { no: '5',  name: '苏文华',     id: '320105199011235678', cur: { code: 'AUD', num: '29' }, amount: '45678',  type: '5519', acct: '2629', term: '03', addr: '江苏省南京市江宁区双龙大道1680号百家湖国际广场10层1005室' },
-  { no: '6',  name: '辛晓东',   id: '330102199305145678', cur: { code: 'JPY', num: '27' }, amount: '365432', type: '5517', acct: '2727', term: '24', addr: '浙江省杭州市上城区解放东路38号钱江国际时代广场15层1501室' },
-  { no: '7',  name: '李桂芝',   id: '370203199201025678', cur: { code: 'NOK', num: '23' }, amount: '198765', type: '5515', acct: '2823', term: '36', addr: '山东省青岛市市北区台东三路77号利群商厦5楼503室' },
-  { no: '8',  name: '曹国庆',     id: '410102199004125678', cur: { code: 'DKK', num: '22' }, amount: '165432', type: '5513', acct: '2922', term: '18', addr: '河南省郑州市中原区建设西路39号王府井百货8楼802室' },
-  { no: '9',  name: '刘家兴',     id: '510106198909145678', cur: { code: 'SEK', num: '21' }, amount: '254321', type: '5511', acct: '3021', term: '36', addr: '四川省成都市成华区双庆路8号华润万象城9层904室' },
-  { no: '10', name: '孙德胜',     id: '320106199211025678', cur: { code: 'RMB', num: '01' }, amount: '43210',  type: '5507', acct: '3101', term: '03', addr: '江苏省南京市六合区雄州街道延安路15号苏宁易购广场4楼402室' },
-  { no: '11', name: '关永康',     id: '110106199305145678', cur: { code: 'CHF', num: '15' }, amount: '98765',  type: '5503', acct: '3215', term: '06', addr: '北京市丰台区方庄芳古园一区18号楼6层601室' },
-  { no: '12', name: '张国栋',     id: '120101198801025678', cur: { code: 'HKD', num: '13' }, amount: '167890', type: '5508', acct: '3313', term: '12', addr: '天津市和平区滨江道200号乐宾百货10层1002室' },
-  { no: '13', name: '赵国庆',     id: '130102199012145678', cur: { code: 'GBP', num: '12' }, amount: '143210', type: '5502', acct: '3412', term: '06', addr: '河北省石家庄市长安区中山东路168号勒泰中心8楼801室' },
-  { no: '14', name: '冯志刚',   id: '510107199210235678', cur: { code: 'CAD', num: '28' }, amount: '34567',  type: '5513', acct: '3528', term: '03', addr: '四川省成都市武侯区一环路南二段6号数码广场6楼601室' },
-  { no: '15', name: '周丽萍',     id: '320102199106215678', cur: { code: 'SGD', num: '18' }, amount: '209876', type: '5511', acct: '3618', term: '18', addr: '江苏省南京市玄武区中央路258号红山森林动物园西门3层301室' },
-  { no: '16', name: '陆建军',     id: '210203199305145678', cur: { code: 'EUR', num: '38' }, amount: '654321', type: '5521', acct: '3738', term: '36', addr: '辽宁省大连市西岗区中山路147号森茂大厦16层1603室' },
-  { no: '17', name: '吕文博',     id: '350102199401025678', cur: { code: 'USD', num: '14' }, amount: '98765',  type: '5501', acct: '3814', term: '12', addr: '福建省福州市鼓楼区五四路158号环球广场7层701室' },
-  { no: '18', name: '王雪梅',     id: '440103199311145678', cur: { code: 'NZD', num: '87' }, amount: '210987', type: '5529', acct: '3987', term: '24', addr: '广东省广州市荔湾区上下九路88号恒宝华庭5楼503室' },
-  { no: '19', name: '乔秀珍',     id: '330104199205215678', cur: { code: 'AUD', num: '29' }, amount: '52134',  type: '5519', acct: '4029', term: '03', addr: '浙江省杭州市江干区庆春东路66号庆春银泰11层1102室' },
-  { no: '20', name: '乔玉兰',     id: '310107199012145678', cur: { code: 'RMB', num: '01' }, amount: '12345',  type: '5507', acct: '4101', term: '03', addr: '上海市普陀区中山北路3300号环球港8楼802室' },
+  { no: '1',  name: '申屠缤',   id: '110110198610121303', cur: { code: 'SEK', num: '21' }, amount: '235760', type: '5515', acct: '0179', term: '18', addr: '广东省深圳市宝安区宝安大道5015号海雅缤纷城22层2209室' },
+  { no: '2',  name: '耿陈华',   id: '430108211909027937', cur: { code: 'AUD', num: '29' }, amount: '184234', type: '5510', acct: '1002', term: '24', addr: '上海市虹口区甜爱支路28号鲁迅公园旁创意园7号楼3单元802室' },
+  { no: '3',  name: '白知南',   id: '500106215206087961', cur: { code: 'GBP', num: '12' }, amount: '118649', type: '5513', acct: '0183', term: '03', addr: '北京市昌平区回龙观镇龙泽苑东区12号楼1单元301室' },
+  { no: '4',  name: '虞恒朋',   id: '510103215901021337', cur: { code: 'AUD', num: '29' }, amount: '184242', type: '5515', acct: '0475', term: '06', addr: '河北省唐山市路南区新华西道118号唐山万达旁南湖小区7号楼2单元801室' },
+  { no: '5',  name: '关西辞',   id: '520104217012247945', cur: { code: 'SEK', num: '21' }, amount: '235757', type: '5513', acct: '0059', term: '03', addr: '山西省阳泉市矿区北大街188号阳煤集团旁洪城河小区9号楼4单元802室' },
+  { no: '6',  name: '费茂眠',   id: '500105199408153401', cur: { code: 'DKK', num: '22' }, amount: '324989', type: '5515', acct: '0475', term: '06', addr: '广东省中山市石岐区中山三路16号利和广场23层2307室' },
+  { no: '7',  name: '石西辞',   id: '440106212701054611', cur: { code: 'DKK', num: '22' }, amount: '324698', type: '5502', acct: '0023', term: '12', addr: '北京市顺义区天竺镇府前二街13号空港家园5号楼3单元201室' },
+  { no: '8',  name: '焦怀瑛',   id: '310109200807051290', cur: { code: 'MOP', num: '81' }, amount: '987629', type: '5511', acct: '0623', term: '36', addr: '北京市房山区长阳镇长阳路86号首开熙悦山小区9号楼3单元1002室' },
+  { no: '9',  name: '纪剑坊',   id: '130102198402094645', cur: { code: 'SGD', num: '18' }, amount: '187938', type: '5515', acct: '0183', term: '03', addr: '广东省深圳市福田区福田街道福华路319号京基滨河时代广场36层3603室' },
+  { no: '10',  name: '卫悦城',   id: '320103199709259034', cur: { code: 'THB', num: '84' }, amount: '315796', type: '7002', acct: '0059', term: '60', addr: '重庆市沙坪坝区三峡广场街道三峡广场步行街1号南开中学旁欣阳广场11号楼4单元903室' },
+  { no: '11',  name: '东方旭',   id: '430109212010091345', cur: { code: 'GBP', num: '12' }, amount: '153485', type: '5523', acct: '0055', term: '18', addr: '广东省深圳市龙岗区龙城街道龙翔大道8033号万科广场22层2209室' },
+  { no: '12',  name: '单于晴',   id: '510110216608284603', cur: { code: 'NZD', num: '87' }, amount: '246435', type: '5510', acct: '1002', term: '24', addr: '北京市昌平区沙河街道沙河高教园北三街8号北街家园5号楼3单元402室' },
+  { no: '13',  name: '纪棠滨',   id: '430102199611157878', cur: { code: 'THB', num: '84' }, amount: '319884', type: '5513', acct: '0183', term: '03', addr: '山西省太原市万柏林区迎泽西大街188号下元商圈华润万象城11号楼4单元903室' },
+  { no: '14',  name: '栾月朗',   id: '340107205808264629', cur: { code: 'CAD', num: '28' }, amount: '33253', type: '5513', acct: '0183', term: '03', addr: '辽宁省阜新市细河区中华路168号宝地福湾B座14层1407室' },
+  { no: '15',  name: '叔孙然',   id: '440104212503217995', cur: { code: 'GBP', num: '12' }, amount: '153486', type: '5502', acct: '0023', term: '12', addr: '安徽省芜湖市镜湖区中山步行街1号侨鸿国际大厦A座18层1806室' },
+  { no: '16',  name: '虞景才',   id: '110109199509057895', cur: { code: 'SGD', num: '18' }, amount: '187937', type: '7002', acct: '0623', term: '60', addr: '北京市平谷区滨河街道福和路YOU享汇智广场6栋' },
+  { no: '17',  name: '公昇景',   id: '340105205606137903', cur: { code: 'PHP', num: '82' }, amount: '32507', type: '5513', acct: '0183', term: '03', addr: '北京市顺义区天竺大街25号空港融慧园K座14层1401室' },
+  { no: '18',  name: '赵诠史',   id: '310103200201059034', cur: { code: 'NOK', num: '23' }, amount: '324987', type: '5506', acct: '0023', term: '24', addr: '广东省佛山市南海区桂澜路28号佛山南海万达广场F座22层2205室' },
+  { no: '19',  name: '申金珂',   id: '42010221030705074679', cur: { code: 'NOK', num: '23' }, amount: '782469', type: '7002', acct: '0059', term: '60', addr: '福建省漳州市芗城区泓达街98号香格里拉写字楼二期X座20层2003栋' },
+  { no: '20',  name: '关贾姣',   id: '310105200403253456', cur: { code: 'DKK', num: '22' }, amount: '846149', type: '5510', acct: '1002', term: '24', addr: '江苏省镇江市京口区中山东路388号镇江八佰伴商务楼二期Z座16层1607室' },
+  { no: '21',  name: '左碌行',   id: '210103199209259034', cur: { code: 'MOP', num: '81' }, amount: '324994', type: '5515', acct: '0179', term: '18', addr: '辽宁省本溪市平山区解放路88号三江商务大厦11幢3单元802室' },
+  { no: '22',  name: '瞿念安',   id: '510103215901021337', cur: { code: 'AUD', num: '29' }, amount: '184242', type: '5515', acct: '0475', term: '06', addr: '西藏永定市录陡街2029号3楼' },
+  { no: '23',  name: '宗星眠',   id: '220107201411154679', cur: { code: 'USD', num: '14' }, amount: '118664', type: '5502', acct: '0023', term: '12', addr: '山东省青岛市城阳区废柴弄1737号利客来商务大厦二期L座17层1705门' },
+  { no: '24',  name: '卞月朗',   id: '22010219700611729', cur: { code: 'USD', num: '14' }, amount: '118663', type: '5506', acct: '1002', term: '24', addr: '浙江省杭州市江干区富春路701号万象城30层3006室' },
+  { no: '25',  name: '诸葛宁',   id: '75101379', cur: { code: 'CAD', num: '28' }, amount: '33248', type: '5515', acct: '0179', term: '03', addr: '内蒙古呼和浩特市新城区如意开发区Yunqi云启商厦Y座16层1603号' },
+  { no: '26',  name: '公冶舟',   id: '330112200609153446', cur: { code: 'MOP', num: '81' }, amount: '984625', type: '5506', acct: '1001', term: '24', addr: '河北省唐山市路北区北新道100号唐山百货旁天元小区8号楼3单元602室' },
+  { no: '27',  name: '闵枫杨',   id: '410103209408224687', cur: { code: 'MOP', num: '81' }, amount: '315804', type: '5510', acct: '1018', term: '36', addr: '河北省邢台市桥西区钢铁北路128号邢台学院旁麒麟湾小区8号楼2单元501室' },
+  { no: '28',  name: '庞西辞',   id: '42010221030705074679', cur: { code: 'NOK', num: '23' }, amount: '782469', type: '7002', acct: '0059', term: '60', addr: '北京市通州区泽熙河路55号运河湾小区8号楼1单元2205室' },
+  { no: '29',  name: '曲母泰',   id: '510105216103167953', cur: { code: 'NZD', num: '87' }, amount: '246434', type: '7002', acct: '0623', term: '60', addr: '重庆市北碚区天生路2号重庆北碚万达广场A座16层1602室' },
+  { no: '30',  name: '于旭辉',   id: '110109199809251290', cur: { code: 'NZD', num: '87' }, amount: '75322', type: '5515', acct: '0475', term: '06', addr: '山东省青岛市市南区香港中路88号昇Wave大厦W座23层2305号' },
+  { no: '31',  name: '沈马潭',   id: '500106215206087961', cur: { code: 'RMB', num: '01' }, amount: '315803', type: '5513', acct: '0183', term: '03', addr: '安徽省合肥市包河区滨湖新区徽州大道1000号滨湖世纪城临滨苑15幢3单元1204室' },
+  { no: '32',  name: '单粤许',   id: '130106198206147987', cur: { code: 'MOP', num: '81' }, amount: '24870', type: '5502', acct: '0023', term: '12', addr: '陕西省延安市宝塔区北大街1号治平大厦8层803室' },
+  { no: '33',  name: '瞿景棠',   id: '500104199307051290', cur: { code: 'HKD', num: '13' }, amount: '262830', type: '5513', acct: '0183', term: '03', addr: '上海市宝山区冶浜江路1599号钢城大厦18层1802室' },
+  { no: '34',  name: '陈知纣',   id: '350104206503217995', cur: { code: 'JPY', num: '27' }, amount: '153474', type: '5510', acct: '1018', term: '36', addr: '江苏省常州市新北区晋陵北路217号常发广场25层2506室' },
+  { no: '35',  name: '邢龚遥',   id: '510712200607153446', cur: { code: 'SGD', num: '18' }, amount: '246439', type: '5511', acct: '0623', term: '36', addr: '北京市门头沟区永定镇石龙路15号永定镇小区4号楼1单元503室' },
+  { no: '36',  name: '仇清禾',   id: '410101201012255667', cur: { code: 'HKD', num: '13' }, amount: '262832', type: '5515', acct: '0475', term: '36', addr: '上海市闵行区莘煎路958号莘城尚品2号楼3单元502室' },
+  { no: '37',  name: '苏月鸣',   id: '520102216810111329', cur: { code: 'PHP', num: '82' }, amount: '24865', type: '5510', acct: '1002', term: '36', addr: '上海市普陀区长风新村街道大渡河路196号长风公园旁长风一村5号楼3单元402室' },
+  { no: '38',  name: '俞渡可',   id: '460102200106257823', cur: { code: 'EUR', num: '38' }, amount: '846142', type: '5515', acct: '0183', term: '03', addr: '吉林省四平市铁东区南一经街156号平里铁弄933号H座12层1206门' },
+  { no: '39',  name: '洪舫川',   id: '510109216507211395', cur: { code: 'SEK', num: '21' }, amount: '235756', type: '5502', acct: '0621', term: '12', addr: '福建省福州市台江区江滨中大道388号福州金融街万达广场二期F座21层2103室' },
+  { no: '40',  name: '胡佰畔',   id: '500102214802104629', cur: { code: 'NOK', num: '23' }, amount: '782478', type: '5511', acct: '1018', term: '36', addr: '贵州省毕节市七星关区七星关大道18号毕节招商花园城二期B座15层1506号' },
+  { no: '41',  name: '纪黯再',   id: '510110216608284603', cur: { code: 'NZD', num: '87' }, amount: '246435', type: '5510', acct: '1002', term: '24', addr: '贵州省六盘水市钟山区钟山大道中段六盘水万达广场A座16层1603室' },
+  { no: '42',  name: '太叔大和',   id: '150102197912247945', cur: { code: 'SGD', num: '18' }, amount: '187940', type: '5511', acct: '1018', term: '36', addr: '西藏自治区日喀则市桑珠孜区珠峰路2号日喀则步行街商务楼B座10层1003室' },
+  { no: '43',  name: '周朝阳',   id: '370109209004241345', cur: { code: 'JPY', num: '27' }, amount: '153479', type: '0361', acct: '0179', term: '18', addr: '辽宁省锦州市古塔区斌辉街道宝阳广场二期B座17层1707门' },
+  { no: '44',  name: '庞汰圆',   id: '360101207210081361', cur: { code: 'EUR', num: '38' }, amount: '324687', type: '7002', acct: '0623', term: '60', addr: '安徽省合肥市包河区滨湖新区星Ocean社区O座15层1509室' },
+  { no: '45',  name: '宁耀达',   id: '430103199712259089', cur: { code: 'CAD', num: '28' }, amount: '555542', type: '5506', acct: '0023', term: '24', addr: '黑龙江省齐齐哈尔市建华区卜奎大街188号鑫海家园二期X座13层1307门' },
+  { no: '46',  name: '纪熙良',   id: '340106205707191311', cur: { code: 'EUR', num: '38' }, amount: '897875', type: '7002', acct: '0059', term: '60', addr: '上海市宝山区共康路5000号绿地新都会13层1306室' },
+  { no: '47',  name: '令晟和',   id: '310112200111153446', cur: { code: 'SGD', num: '18' }, amount: '246448', type: '5528', acct: '0055', term: '18', addr: '北京市丰台区丰福明路智文国际教研中心校区三层3099' },
+  { no: '48',  name: '殷消倭',   id: '3301022044066147987', cur: { code: 'THB', num: '84' }, amount: '54813', type: '5515', acct: '0183', term: '03', addr: '福建省厦门市湖里区环岛东路1699号建发国际大厦38层3808室' },
+  { no: '49',  name: '俞弦独',   id: '510712200607153446', cur: { code: 'SGD', num: '18' }, amount: '246439', type: '5511', acct: '0623', term: '36', addr: '河南省开封市龙亭区澡月弄1914号5幢A座16层1602室' },
+  { no: '50',  name: '淳于安',   id: '320103203509067995', cur: { code: 'JPY', num: '27' }, amount: '153468', type: '7002', acct: '0059', term: '60', addr: '江苏省南京市鼓楼区中山路18号德基广场35层3508室' },
 ];
 
 /* 题库注册表与当前题库 */
@@ -297,6 +327,51 @@ function esc(s) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#39;');
+}
+
+/* 逐字对比：只统计“打出的”字符——相同位置字符不同计 1 错字；
+ * 漏打（期望更长）的字符不计错字，多打（期望更短）的字符计错字。
+ * 保证错字数 ≤ 已打总字数，错字率不超过 100%。 */
+function charDiff(a, b) {
+  let err = 0;
+  const len = Math.max(a.length, b.length);
+  for (let i = 0; i < len; i++) {
+    if (a[i] === undefined) continue; // 该位置没打，不算错字
+    if (a[i] !== b[i]) err++;
+  }
+  return err;
+}
+
+/* 评级：合格≥50、三级≥60、二级≥70、一级≥90（差错率均≤15 字/千字） */
+function gradeLevel(speed, errRate) {
+  if (speed >= 90 && errRate <= 15) return '一级';
+  if (speed >= 70 && errRate <= 15) return '二级';
+  if (speed >= 60 && errRate <= 15) return '三级';
+  if (speed >= 50 && errRate <= 15) return '合格';
+  return null;
+}
+
+/* 成绩弹窗：录入速度、差错率、等级判定 */
+function showGradeModal(speed, errPerK) {
+  const level = gradeLevel(Number(speed), Number(errPerK));
+  let overlay = document.getElementById('gradeModal');
+  if (!overlay) {
+    overlay = document.createElement('div');
+    overlay.id = 'gradeModal';
+    overlay.className = 'modal-overlay';
+    document.body.appendChild(overlay);
+    overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('show'); });
+  }
+  overlay.innerHTML = `
+    <div class="modal">
+      <h3>训练成绩</h3>
+      <div class="modal-row"><span>录入速度</span><b>${speed} 字/分钟</b></div>
+      <div class="modal-row"><span>差错率</span><b>${errPerK} 字/千字</b></div>
+      <div class="modal-row"><span>判定</span><b class="${level ? 'pass' : 'fail'}">${level ? '合格 · ' + level : '未合格'}</b></div>
+      <button type="button" class="btn btn-primary" id="modalClose">关闭</button>
+    </div>`;
+  overlay.classList.add('show');
+  overlay.querySelector('#modalClose').addEventListener('click', () => overlay.classList.remove('show'));
 }
 
 const $ = (sel, root) => (root || document).querySelector(sel);
@@ -358,7 +433,7 @@ function render() {
 /* ---------------- 版本号 ----------------
  * 约定：每次 git push 发布后，小版本 +0.0.1（如 1.0.2 → 1.0.3）
  */
-const APP_VERSION = '1.0.7';
+const APP_VERSION = '1.0.9';
 function pageFoot() {
   return `<div class="page-foot">国中行银综合录入训练 v${APP_VERSION} · 仅供教学训练使用</div>`;
 }
@@ -559,6 +634,8 @@ function submitCheck(auto) {
   const errors = [];   // 格式错误明细
   const diffs = [];    // 与预录不一致明细
   let correctRows = 0;
+  let totalChars = 0;  // 已填写的总字数（空单元格不计）
+  let wrongChars = 0;  // 其中与预录不一致的错字数
 
   rows.forEach((tr, i) => {
     const row = PRELOADED[i];
@@ -577,6 +654,10 @@ function submitCheck(auto) {
         rowOk = false;
         return;
       }
+      // —— 错字统计（只统计已填写的内容）——
+      const expect = col === 'cur' ? row.cur.num : row[col];
+      totalChars += val.length;
+      wrongChars += charDiff(val, String(expect));
       if (col === 'id' && !/^\d+$/.test(val)) {
         msg = `第 ${i + 1} 行身份证号必须为数字`;
       } else if (col === 'amount' && !/^\d+$/.test(val)) {
@@ -599,7 +680,6 @@ function submitCheck(auto) {
       }
 
       // —— 与预录入信息逐格核对 ——
-      const expect = col === 'cur' ? row.cur.num : row[col];
       if (val !== String(expect)) {
         inp.classList.add('error');
         diffs.push(`第 ${i + 1} 行「${label}」录入为「${esc(val)}」，预录入信息为「${esc(expect)}」`);
@@ -614,7 +694,14 @@ function submitCheck(auto) {
   const total = rows.length;
   const wrongRows = total - correctRows;
   const pct = (correctRows / total * 100).toFixed(1);
-  const head = `${auto ? '⏱ 时间到，已自动统计：' : '📊 核对结果：'}共 ${total} 条 · 正确 ${correctRows} 条 · 错误 ${wrongRows} 条 · 准确率 ${pct}%`;
+  // 录入速度：总字数 ÷ 训练总时长（固定 10 分钟）
+  const speed = totalChars ? (totalChars / (TIMER_SECONDS / 60)).toFixed(1) : '0.0';
+  // 差错率：每千字错字数
+  const errPerK = totalChars ? (wrongChars / totalChars * 1000).toFixed(1) : '0.0';
+  const head = `${auto ? '⏱ 时间到，已自动统计：' : '📊 核对结果：'}共 ${total} 条 · 正确 ${correctRows} 条 · 错误 ${wrongRows} 条 · 准确率 ${pct}% · 总字数 ${totalChars} · 错字 ${wrongChars} · 差错率 ${errPerK} 字/千字`;
+
+  // 弹出成绩单：录入速度 / 差错率 / 等级判定
+  showGradeModal(speed, errPerK);
 
   if (wrongRows === 0) {
     result.innerHTML = `<div class="bar ok">${head}</div>`;
