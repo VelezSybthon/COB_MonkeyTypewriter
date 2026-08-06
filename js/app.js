@@ -246,6 +246,14 @@ function render() {
   main.scrollTop = 0;
 }
 
+/* ---------------- 版本号 ----------------
+ * 约定：每次 git push 发布后，小版本 +0.0.1（如 1.0.2 → 1.0.3）
+ */
+const APP_VERSION = '1.0.2';
+function pageFoot() {
+  return `<div class="page-foot">国中行银综合录入训练 v${APP_VERSION} · 仅供教学训练使用</div>`;
+}
+
 /* ---------------- 中文训练页（开发中） ---------------- */
 function renderChinesePage() {
   return `
@@ -260,7 +268,8 @@ function renderChinesePage() {
         <p>中文训练功能正在开发中，敬请期待。<br>完成后将在此页面展示训练内容。</p>
         <button type="button" class="btn btn-primary btn-back">返回综合录入训练</button>
       </div>
-    </div>`;
+    </div>
+    ${pageFoot()}`;
 }
 
 /* ---------------- 占位页（后期新练习） ---------------- */
@@ -277,7 +286,8 @@ function renderPlaceholder(ex) {
         <p>此入口为后续扩展预留。<br>在 js/app.js 的 EXERCISES 列表中追加一项并实现 render 函数，即可挂载新的练习页面。</p>
         <button type="button" class="btn btn-primary btn-back">返回综合录入训练</button>
       </div>
-    </div>`;
+    </div>
+    ${pageFoot()}`;
 }
 
 /* ---------------- 综合录入训练页 ---------------- */
@@ -371,7 +381,7 @@ function renderTrainPage() {
       </div>
     </section>
 
-    <div class="page-foot">国中行银综合录入训练 · 仅供教学训练使用</div>`;
+    ${pageFoot()}`;
 }
 
 /* ---------------- 倒计时控制（焦点驱动） ---------------- */
@@ -535,14 +545,17 @@ function tameTableScroll() {
   });
 }
 
-/* ---------------- Enter 键在录入表内换格：同行下一格，行末切下一行首格 ----------------
- * Tab 键由浏览器原生 DOM 顺序实现（已是同行下一格、行末下一行首格），无需处理。
- * Enter 需显式实现；中文输入法组词时的 Enter（isComposing）不触发换格。
+/* ---------------- 录入表内换格：Enter / Tab 都同行下一格，行末切下一行首格 ----------------
+ * Tab 前进用显式实现（含行末跳转、最后一行行末停在原地，不跳出表格）；
+ * Shift+Tab 反向仍走浏览器原生。中文输入法组词时的 Enter（isComposing）不触发换格。
  */
 function bindEnterNavigation() {
   document.querySelectorAll('.input-table tbody input').forEach(inp => {
     inp.addEventListener('keydown', e => {
-      if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229) return;
+      if (e.isComposing || e.keyCode === 229) return;
+      const isEnter = e.key === 'Enter';
+      const isTab = e.key === 'Tab' && !e.shiftKey;
+      if (!isEnter && !isTab) return;
       e.preventDefault();
       const inputs = Array.from(document.querySelectorAll('.input-table tbody input'));
       const idx = inputs.indexOf(e.target);

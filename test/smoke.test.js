@@ -178,6 +178,26 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   navInputs[3].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', isComposing: true, bubbles: true, cancelable: true }));
   assert(document.activeElement === lastInput, '中文输入法组词 Enter 不换格');
 
+  console.log('15) Tab 键在录入表内换格（行末跳下一行首）');
+  navInputs[1].focus();
+  navInputs[1].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+  assert(document.activeElement === navInputs[2], 'Tab 从第 2 格切到同行第 3 格');
+  navInputs[7].focus(); // 第 1 行行末
+  navInputs[7].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+  assert(document.activeElement === navInputs[8], '行末 Tab 切到下一行首格');
+  lastInput.focus();
+  lastInput.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Tab', bubbles: true, cancelable: true }));
+  assert(document.activeElement === lastInput, '最后一行行末 Tab 停在原地（不跳出表格）');
+
+  console.log('16) 页面底部版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.2'), '训练页底部显示版本 v1.0.2');
+  window.location.hash = '#/chinese-training';
+  window.dispatchEvent(new window.HashChangeEvent('hashchange'));
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.2'), '中文训练页底部显示版本号');
+  window.location.hash = '#/new-practice-1';
+  window.dispatchEvent(new window.HashChangeEvent('hashchange'));
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.2'), '占位页底部显示版本号');
+
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);
 })();
