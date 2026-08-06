@@ -28,9 +28,9 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert([...navItems].some(a => a.textContent.includes('中文训练')), '侧边栏含「中文训练」tab');
   assert(!document.body.classList.contains('sidebar-collapsed'), '宽屏下侧边栏默认完整显示（未收起）');
   assert(document.querySelector('#sidebarNav .nav-item.active')?.textContent.includes('综合录入训练'), '默认激活「综合录入训练」');
-  assert(document.querySelectorAll('.pre-table tbody tr').length === 20, '预录表格 20 行数据');
-  assert(document.querySelectorAll('.input-table tbody tr').length === 20, '录入表格 20 行空白输入行');
-  assert(document.querySelectorAll('.input-table tbody input').length === 20 * 8, `录入表格共 ${20 * 8} 个输入框（20 行 × 8 列）`);
+  assert(document.querySelectorAll('.pre-table tbody tr').length === 50, '预录表格 50 行数据');
+  assert(document.querySelectorAll('.input-table tbody tr').length === 50, '录入表格 50 行空白输入行');
+  assert(document.querySelectorAll('.input-table tbody input').length === 50 * 8, `录入表格共 ${50 * 8} 个输入框（50 行 × 8 列）`);
   assert(!!document.querySelector('.box-pre'), '预录表置于固定高度可滚动容器 box-pre');
   assert(!!document.querySelector('.box-input'), '录入表置于固定高度可滚动容器 box-input');
   const preCols = [...document.querySelectorAll('.pre-table colgroup col')].map(c => c.className);
@@ -40,8 +40,8 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(document.getElementById('timerValue').textContent === '10:00', '倒计时初始显示 10:00');
   assert(document.getElementById('timerState').textContent === '未开始', '倒计时状态为「未开始」');
   const curCell = document.querySelector('.pre-table tbody tr td:nth-child(4)');
-  assert(curCell.textContent.includes('SGD'), '预录表第 1 行币别含字母代码 SGD');
-  assert(curCell.querySelector('.cur-num')?.textContent === '18', '预录表第 1 行币别含红色加粗编号 18');
+  assert(curCell.textContent.includes('DKK'), '预录表第 1 行币种代码含字母代码 DKK');
+  assert(curCell.querySelector('.cur-num')?.textContent === '22', '预录表第 1 行币种代码含红色加粗编号 22');
 
   console.log('2) 未开始时提交核对 → 提示先聚焦');
   document.getElementById('btnSubmit').click();
@@ -72,7 +72,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   });
   document.getElementById('btnSubmit').click();
   const result = document.getElementById('checkResult');
-  assert(result.textContent.includes('正确 20 条') && result.textContent.includes('错误 0 条'), '统计显示正确 20 条、错误 0 条');
+  assert(result.textContent.includes('正确 50 条') && result.textContent.includes('错误 0 条'), '统计显示正确 50 条、错误 0 条');
   assert(result.textContent.includes('准确率 100.0%'), '准确率 100.0%');
   assert(!!result.querySelector('.bar.ok'), '显示绿色「核对通过」结果条');
   assert(document.querySelectorAll('.input-table input.error').length === 0, '全对时无错误标红');
@@ -81,13 +81,13 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   rows[1].querySelectorAll('input')[0].value = '错误名字';     // 第 2 行姓名不一致
   rows[2].querySelectorAll('input')[2].value = '99';          // 第 3 行币别填不存在的编号（格式错误）
   document.getElementById('btnSubmit').click();
-  assert(result.textContent.includes('正确 18 条') && result.textContent.includes('错误 2 条'), '统计显示正确 18 条、错误 2 条');
-  assert(result.textContent.includes('准确率 90.0%'), '准确率 90.0%');
+  assert(result.textContent.includes('正确 48 条') && result.textContent.includes('错误 2 条'), '统计显示正确 48 条、错误 2 条');
+  assert(result.textContent.includes('准确率 96.0%'), '准确率 96.0%');
   assert(!!result.querySelector('.bar.warn'), '显示警告结果条');
   assert(document.querySelectorAll('.input-table input.error').length === 2, '恰好 2 个错误单元格标红框红字');
   const detail = result.textContent;
   assert(detail.includes('第 2 行「姓名」') && detail.includes('错误名字'), '明细指出第 2 行姓名不一致');
-  assert(detail.includes('第 3 行「币别」编号不存在'), '明细指出第 3 行币别编号不存在');
+  assert(detail.includes('第 3 行「币种代码」编号不存在'), '明细指出第 3 行币种代码编号不存在');
   assert(rows[1].querySelectorAll('input')[0].classList.contains('error'), '不一致单元格标红');
 
   console.log('6) 币别格式校验（填字母代码）');
@@ -100,7 +100,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   rows[5].querySelectorAll('input')[5].value = '';      // 第 6 行账户类别留空
   document.getElementById('btnSubmit').click();
   assert(!result.textContent.includes('不能为空'), '明细不再出现「不能为空」');
-  assert(result.textContent.includes('正确 16 条') && result.textContent.includes('错误 4 条'), '留空行计入错误统计');
+  assert(result.textContent.includes('正确 46 条') && result.textContent.includes('错误 4 条'), '留空行计入错误统计');
   assert(rows[5].querySelectorAll('input')[0].classList.contains('error'), '空字段仍标红框');
 
   console.log('8) 重置录入 与 重新训练');
@@ -144,7 +144,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   console.log('12) 题库切换（共 3 套）');
   assert(document.querySelectorAll('.bank-btn').length === 3, '综合训练页含 3 个题库按钮');
   assert(document.querySelector('.bank-btn.active')?.dataset.bank === '0', '默认第 1 套激活');
-  assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '邢龚遥', '第 1 套预录首行姓名');
+  assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '龙星通', '第 1 套预录首行姓名');
   document.querySelectorAll('.bank-btn')[1].click();
   assert(document.querySelector('.bank-btn.active')?.dataset.bank === '1', '点击后切换到第 2 套');
   assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '张海涛', '第 2 套预录首行姓名');
@@ -153,7 +153,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   document.querySelectorAll('.bank-btn')[2].click();
   assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '陈志明', '第 3 套预录首行姓名');
   document.querySelectorAll('.bank-btn')[0].click();
-  assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '邢龚遥', '切回第 1 套');
+  assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '龙星通', '切回第 1 套');
 
   console.log('13) 表格框内滚动幅度缩小 1/3');
   const scrollBox = document.querySelector('.box-input');
@@ -190,13 +190,13 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(document.activeElement === lastInput, '最后一行行末 Tab 停在原地（不跳出表格）');
 
   console.log('16) 页面底部版本号');
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.5'), '训练页底部显示版本 v1.0.5');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.6'), '训练页底部显示版本 v1.0.6');
   window.location.hash = '#/chinese-training';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.5'), '中文训练页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.6'), '中文训练页底部显示版本号');
   window.location.hash = '#/new-practice-1';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.5'), '占位页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.6'), '占位页底部显示版本号');
 
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);
