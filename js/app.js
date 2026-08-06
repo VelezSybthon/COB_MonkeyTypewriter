@@ -535,6 +535,23 @@ function tameTableScroll() {
   });
 }
 
+/* ---------------- Enter 键在录入表内换格：同行下一格，行末切下一行首格 ----------------
+ * Tab 键由浏览器原生 DOM 顺序实现（已是同行下一格、行末下一行首格），无需处理。
+ * Enter 需显式实现；中文输入法组词时的 Enter（isComposing）不触发换格。
+ */
+function bindEnterNavigation() {
+  document.querySelectorAll('.input-table tbody input').forEach(inp => {
+    inp.addEventListener('keydown', e => {
+      if (e.key !== 'Enter' || e.isComposing || e.keyCode === 229) return;
+      e.preventDefault();
+      const inputs = Array.from(document.querySelectorAll('.input-table tbody input'));
+      const idx = inputs.indexOf(e.target);
+      if (idx === -1 || idx === inputs.length - 1) return; // 最后一行行末：停在原地
+      inputs[idx + 1].focus();
+    });
+  });
+}
+
 function initTrainPage() {
   $('#btnResetAll').addEventListener('click', resetTraining);
   $('#btnSubmit').addEventListener('click', () => submitCheck(false));
@@ -547,6 +564,9 @@ function initTrainPage() {
 
   // 滚动幅度缩小 1/3
   tameTableScroll();
+
+  // Enter 键在录入表内换格（同行下一格 / 行末下一行首格）
+  bindEnterNavigation();
 
   // 焦点进入录入表 → 自动开始 / 继续计时；焦点移出录入表 → 自动暂停
   const box = $('.box-input');

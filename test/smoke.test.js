@@ -163,6 +163,21 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   scrollBox.dispatchEvent(new window.WheelEvent('wheel', { deltaY: 300, deltaX: 0, bubbles: true, cancelable: true }));
   assert(scrollBox.scrollTop === 200, `滚动幅度为 deltaY 的 2/3（实际 ${scrollBox.scrollTop}）`);
 
+  console.log('14) Enter 键在录入表内换格');
+  const navInputs = [...document.querySelectorAll('.input-table tbody input')];
+  navInputs[0].focus();
+  navInputs[0].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+  assert(document.activeElement === navInputs[1], 'Enter 从第 1 格切到同行第 2 格');
+  navInputs[7].focus(); // 第 1 行行末（地址列）
+  navInputs[7].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+  assert(document.activeElement === navInputs[8], '行末 Enter 切到下一行首格');
+  const lastInput = navInputs[navInputs.length - 1];
+  lastInput.focus();
+  lastInput.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', bubbles: true, cancelable: true }));
+  assert(document.activeElement === lastInput, '最后一行行末 Enter 停在原地');
+  navInputs[3].dispatchEvent(new window.KeyboardEvent('keydown', { key: 'Enter', isComposing: true, bubbles: true, cancelable: true }));
+  assert(document.activeElement === lastInput, '中文输入法组词 Enter 不换格');
+
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);
 })();
