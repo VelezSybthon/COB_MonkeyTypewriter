@@ -190,13 +190,13 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(document.activeElement === lastInput, '最后一行行末 Tab 停在原地（不跳出表格）');
 
   console.log('16) 页面底部版本号');
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.2'), '训练页底部显示版本 v1.0.2');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.3'), '训练页底部显示版本 v1.0.3');
   window.location.hash = '#/chinese-training';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.2'), '中文训练页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.3'), '中文训练页底部显示版本号');
   window.location.hash = '#/new-practice-1';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.2'), '占位页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.3'), '占位页底部显示版本号');
 
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);

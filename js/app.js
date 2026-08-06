@@ -249,7 +249,7 @@ function render() {
 /* ---------------- 版本号 ----------------
  * 约定：每次 git push 发布后，小版本 +0.0.1（如 1.0.2 → 1.0.3）
  */
-const APP_VERSION = '1.0.2';
+const APP_VERSION = '1.0.3';
 function pageFoot() {
   return `<div class="page-foot">国中行银综合录入训练 v${APP_VERSION} · 仅供教学训练使用</div>`;
 }
@@ -345,12 +345,14 @@ function renderTrainPage() {
           <span class="hint">共 ${PRELOADED.length} 条 · 框内可滚动查看 · 币别栏红色数字为编号，录入时填写该编号</span>
         </div>
       </div>
-      <div class="section-body table-wrap box-pre">
-        <table class="data-table pre-table">
-          ${colGroup}
-          <thead><tr>${head}</tr></thead>
-          <tbody>${preRows}</tbody>
-        </table>
+      <div class="section-body">
+        <div class="table-wrap box-pre">
+          <table class="data-table pre-table">
+            ${colGroup}
+            <thead><tr>${head}</tr></thead>
+            <tbody>${preRows}</tbody>
+          </table>
+        </div>
       </div>
     </section>
 

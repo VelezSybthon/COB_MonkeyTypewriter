@@ -45,8 +45,9 @@ body {
   padding: 12px 24px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;   /* 主标题整体居中 */
   gap: 16px;
+  position: relative;
 }
 .brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
 .brand-logo {
@@ -71,7 +72,12 @@ body {
 }
 .brand-text h1 { font-size: 20px; font-weight: 700; letter-spacing: 1px; }
 .brand-text p { font-size: 12px; opacity: .85; margin-top: 2px; letter-spacing: .5px; }
-.topbar-side { flex: 0 0 auto; }
+.topbar-side {
+  position: absolute;
+  right: 24px;
+  top: 50%;
+  transform: translateY(-50%);
+}
 .topbar-badge {
   display: inline-block;
   border: 1px solid rgba(255,255,255,.7);
@@ -184,31 +190,14 @@ body {
 .nav-item.active .nav-icon { background: rgba(255,255,255,.22); color: #fff; }
 .nav-label { font-size: 14px; overflow: hidden; text-overflow: ellipsis; }
 
-.sidebar-foot {
-  flex: 0 0 auto;
-  border-top: 1px solid var(--border);
-  padding: 12px 16px;
-  font-size: 11px;
-  color: var(--text-sub);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  white-space: nowrap;
-}
-.sidebar-foot-icon { display: none; }
-
 /* 收起状态 */
 body.sidebar-collapsed .sidebar { width: var(--sidebar-w-min); }
 body.sidebar-collapsed .sidebar-title,
-body.sidebar-collapsed .nav-label,
-body.sidebar-collapsed .sidebar-foot-text { display: none; }
+body.sidebar-collapsed .nav-label { display: none; }
 body.sidebar-collapsed .sidebar-head { justify-content: center; padding: 14px 0; }
 body.sidebar-collapsed .sidebar-nav { padding: 10px 6px; }
 body.sidebar-collapsed .nav-item { justify-content: center; padding: 9px 0; }
 body.sidebar-collapsed .nav-item.active::before { left: -6px; }
-body.sidebar-collapsed .sidebar-foot { justify-content: center; padding: 12px 0; }
-body.sidebar-collapsed .sidebar-foot-text { display: none; }
-body.sidebar-collapsed .sidebar-foot-icon { display: inline; color: var(--boc-red); font-weight: 700; }
 
 /* ---------------- 主内容区 ---------------- */
 .main {

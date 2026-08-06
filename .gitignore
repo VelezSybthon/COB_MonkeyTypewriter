@@ -3,3 +3,4 @@ node_modules/
 .reasonix/
 *.log
 .DS_Store
+reasonix.toml
