@@ -23,6 +23,12 @@
 
 html, body { height: 100%; }
 
+html {
+  /* 始终保留垂直滚动条槽位：切换页面时视口宽度恒定，顶栏居中标题位置不跳动 */
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
+}
+
 body {
   font-family: "Microsoft YaHei", "PingFang SC", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   background: var(--bg);
