@@ -72,9 +72,9 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   });
   document.getElementById('btnSubmit').click();
   const result = document.getElementById('checkResult');
-  assert(result.textContent.includes('正确 50 条') && result.textContent.includes('错误 0 条'), '统计显示正确 50 条、错误 0 条');
-  assert(result.textContent.includes('准确率 100.0%'), '准确率 100.0%');
   const expectedTotal = preData.reduce((s, row) => s + row.slice(1).reduce((a, v) => a + v.length, 0), 0);
+  assert(result.textContent.includes('共 50 条 · 总字数 ' + expectedTotal), `字级统计：共 50 条、总字数 ${expectedTotal}`);
+  assert(result.textContent.includes('准确率 100.0%'), '准确率 100.0%');
   assert(result.textContent.includes('总字数 ' + expectedTotal), `总字数统计正确（${expectedTotal}）`);
   assert(result.textContent.includes('错字 0') && result.textContent.includes('差错率 0.0 字/千字'), '全对时错字 0、差错率 0.0 字/千字');
   assert(!!document.getElementById('gradeModal')?.classList.contains('show'), '提交后弹出成绩弹窗');
@@ -86,40 +86,45 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   document.getElementById('modalClose').click();
   assert(!document.getElementById('gradeModal').classList.contains('show'), '点击关闭后弹窗消失');
   assert(!!result.querySelector('.bar.ok'), '显示绿色「核对通过」结果条');
-  assert(document.querySelectorAll('.input-table input.error').length === 0, '全对时无错误标红');
+  assert(document.querySelectorAll('.cell-diff').length === 0, '全对时无错误高亮');
 
-  console.log('5) 制造 2 处错误 → 准确率 90%');
+  console.log('5) 制造 2 处错误 → 准确率按字算');
   rows[1].querySelectorAll('input')[0].value = '错误名字';     // 第 2 行姓名不一致
   rows[2].querySelectorAll('input')[2].value = '99';          // 第 3 行币别填不存在的编号（格式错误）
   document.getElementById('btnSubmit').click();
-  assert(result.textContent.includes('正确 48 条') && result.textContent.includes('错误 2 条'), '统计显示正确 48 条、错误 2 条');
-  assert(result.textContent.includes('准确率 96.0%'), '准确率 96.0%');
+  assert(result.textContent.includes('准确率 99.8%'), '准确率按字算（1-6/3532 = 99.8%）');
   assert(!!result.querySelector('.bar.warn'), '显示警告结果条');
-  assert(document.querySelectorAll('.input-table input.error').length === 2, '恰好 2 个错误单元格标红框红字');
+  assert(document.querySelectorAll('.cell-diff').length === 2, '恰好 2 个错误单元格展示逐字高亮');
+  const nameDiff = rows[1].closest('tbody').querySelectorAll('tr')[1].querySelectorAll('td')[1].querySelector('.cell-diff');
+  assert(nameDiff && nameDiff.querySelectorAll('.c-err').length === 4, '姓名“错误名字”4 字全部标红（含多打的字）');
   const detail = result.textContent;
   assert(detail.includes('第 2 行「姓名」') && detail.includes('错误名字'), '明细指出第 2 行姓名不一致');
   assert(detail.includes('第 3 行「币别」编号不存在'), '明细指出第 3 行币别编号不存在');
   assert(result.textContent.includes('错字 6'), '错字统计：姓名 4 字（含多打的字）+ 币别 2 字 = 6');
-  assert(rows[1].querySelectorAll('input')[0].classList.contains('error'), '不一致单元格标红');
+  assert(rows[1].querySelectorAll('input')[0].style.display === 'none', '错误单元格输入框隐藏，改为高亮展示');
+  const cellTd = rows[1].querySelectorAll('input')[0].closest('td');
+  assert(!!cellTd.querySelector('.c-err'), '错字以 .c-err 红色高亮');
+  cellTd.querySelector('.cell-diff').click();
+  assert(!cellTd.querySelector('.cell-diff') && rows[1].querySelectorAll('input')[0].style.display !== 'none', '点击高亮层恢复编辑');
 
   console.log('6) 币别格式校验（填字母代码）');
   rows[3].querySelectorAll('input')[2].value = 'SGD';
   document.getElementById('btnSubmit').click();
   assert(result.textContent.includes('应填写 2 位数字编号'), '提示币别应填写 2 位数字编号');
 
-  console.log('7) 空字段不再罗列「不能为空」明细，但仍标红并计错');
+  console.log('7) 空字段不再罗列「不能为空」明细，整格按漏字填充并计错');
   rows[5].querySelectorAll('input')[0].value = '';      // 第 6 行姓名留空
   rows[5].querySelectorAll('input')[5].value = '';      // 第 6 行账户类别留空
   document.getElementById('btnSubmit').click();
   assert(!result.textContent.includes('不能为空'), '明细不再出现「不能为空」');
-  assert(result.textContent.includes('正确 46 条') && result.textContent.includes('错误 4 条'), '留空行计入错误统计');
-  assert(rows[5].querySelectorAll('input')[0].classList.contains('error'), '空字段仍标红框');
+  assert(result.textContent.includes('错字 9') && result.textContent.includes('准确率 99.7%'), '留空不计错字，字级准确率仍高（错字 9 / 3526）');
+  assert(rows[5].querySelectorAll('input')[0].closest('td').querySelector('.cell-diff')?.textContent.includes('漏'), '空字段整格以“漏”填充');
 
   console.log('8) 重置录入 与 重新训练');
   document.getElementById('btnReset').click();
   const empties = [...document.querySelectorAll('.input-table input')].every(i => i.value === '');
   assert(empties, '「重置录入」清空所有输入框');
-  assert(document.querySelectorAll('.input-table input.error').length === 0, '错误标记被清除');
+  assert(document.querySelectorAll('.cell-diff').length === 0, '错误高亮被清除');
   assert(document.getElementById('checkResult').innerHTML === '', '核对结果被清空');
   document.getElementById('btnResetAll').click();
   assert(document.getElementById('timerValue').textContent === '10:00', '「重新训练」重置倒计时为 10:00');
@@ -210,14 +215,29 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(leakResult.includes('错字 3'), `漏打 15 位不计错字，错字仅 3（实测：${leakResult.match(/错字 (\d+)/)?.[1]}）`);
   assert(leakResult.includes('差错率 1000.0 字/千字'), '差错率 3/3 × 1000 = 1000.0 字/千字');
 
-  console.log('17) 页面底部版本号');
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.9'), '训练页底部显示版本 v1.0.9');
+  console.log('17) 中间漏字对齐：漏 0 → 46漏3，不产生假错字');
+  document.getElementById('btnResetAll').click(); // 清空重置
+  const row0 = [...document.querySelectorAll('.input-table tbody tr')][0];
+  row0.querySelectorAll('input')[0].blur();  // 离开当前焦点
+  row0.querySelectorAll('input')[0].focus(); // 重新聚焦以启动计时
+  row0.querySelectorAll('input')[1].value = '45010521360213463'; // 第 1 行身份证漏 0（期望 18 位）
+  document.getElementById('btnSubmit').click();
+  const r17 = document.getElementById('checkResult').textContent;
+  assert(r17.includes('错字 0'), `漏 0 不产生假错字（实测错字 ${r17.match(/错字 (\d+)/)?.[1]}）`);
+  const idDiff = row0.querySelectorAll('input')[1].closest('td').querySelector('.cell-diff');
+  assert(idDiff && idDiff.textContent === '4501052136021346漏3', `对齐显示 46漏3（实测：${idDiff?.textContent}）`);
+  assert(idDiff.querySelectorAll('.c-err').length === 0, '无红色错字');
+  const emptyRows = [...document.querySelectorAll('.input-table tbody tr')].slice(1);
+  assert(emptyRows.every(tr => !tr.querySelector('.cell-diff')), '整行未写的行不显示漏字填充（保持空白）');
+
+  console.log('18) 页面底部版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.10'), '训练页底部显示版本 v1.0.10');
   window.location.hash = '#/chinese-training';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.9'), '中文训练页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.10'), '中文训练页底部显示版本号');
   window.location.hash = '#/new-practice-1';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.9'), '占位页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.10'), '占位页底部显示版本号');
 
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);

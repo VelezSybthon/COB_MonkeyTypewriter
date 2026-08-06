@@ -329,17 +329,63 @@ function esc(s) {
     .replace(/'/g, '&#39;');
 }
 
-/* 逐字对比：只统计“打出的”字符——相同位置字符不同计 1 错字；
- * 漏打（期望更长）的字符不计错字，多打（期望更短）的字符计错字。
- * 保证错字数 ≤ 已打总字数，错字率不超过 100%。 */
-function charDiff(a, b) {
-  let err = 0;
-  const len = Math.max(a.length, b.length);
-  for (let i = 0; i < len; i++) {
-    if (a[i] === undefined) continue; // 该位置没打，不算错字
-    if (a[i] !== b[i]) err++;
+/* 序列对齐（贪心顺序匹配）：从头部逐字对齐输入与期望。
+ * - 字符相等 → 正常；
+ * - 不等时，若能在紧随其后的 1–2 个期望字符中找到匹配 → 中间的期望字符算“漏”（红色漏）；
+ * - 否则该输入字符算错字（替换）；输入多出的算错字（多打）。
+ * 漏字（omit）不计错字，错字/多打（err）计错字。 */
+function alignDiff(val, exp) {
+  const GAP = 2; // 允许连续漏字上限（1–2 个字）
+  const ops = [];
+  let i = 0, j = 0;
+  const n = val.length, m = exp.length;
+  while (i < n || j < m) {
+    if (i === n) { ops.push({ type: 'omit' }); j++; continue; }   // 剩余全是漏
+    if (j === m) { ops.push({ type: 'err', ch: val[i] }); i++; continue; } // 多打
+    if (val[i] === exp[j]) { ops.push({ type: 'ok', ch: val[i] }); i++; j++; continue; }
+    let found = -1;
+    for (let k = 1; k <= GAP && j + k < m; k++) {
+      if (exp[j + k] === val[i]) { found = k; break; }
+    }
+    if (found !== -1) {
+      for (let k = 0; k < found; k++) ops.push({ type: 'omit' });
+      j += found;
+    } else {
+      ops.push({ type: 'err', ch: val[i] });
+      i++; j++;
+    }
   }
-  return err;
+  return ops;
+}
+
+/* 错字数：替换 + 多打（漏打不计） */
+function charDiff(a, b) {
+  return alignDiff(a, b).filter(o => o.type === 'err').length;
+}
+
+/* 逐字对比高亮：正确字正常色，错字/多打字标红，漏字位置以红色“漏”填充 */
+function diffHtml(val, expect) {
+  return alignDiff(val, expect).map(o => {
+    if (o.type === 'ok') return '<span class="c-ok">' + esc(o.ch) + '</span>';
+    if (o.type === 'err') return '<span class="c-err">' + esc(o.ch) + '</span>';
+    return '<span class="c-omit">漏</span>';
+  }).join('');
+}
+
+/* 错误单元格：隐藏输入框，展示高亮对比层；点击可恢复编辑 */
+function markCellError(inp, val, expect) {
+  const td = inp.closest('td');
+  inp.style.display = 'none';
+  const diff = document.createElement('div');
+  diff.className = 'cell-diff';
+  diff.innerHTML = diffHtml(val, expect);
+  diff.title = '点击恢复编辑';
+  diff.addEventListener('click', () => {
+    diff.remove();
+    inp.style.display = '';
+    inp.focus();
+  });
+  td.appendChild(diff);
 }
 
 /* 评级：合格≥50、三级≥60、二级≥70、一级≥90（差错率均≤15 字/千字） */
@@ -433,7 +479,7 @@ function render() {
 /* ---------------- 版本号 ----------------
  * 约定：每次 git push 发布后，小版本 +0.0.1（如 1.0.2 → 1.0.3）
  */
-const APP_VERSION = '1.0.9';
+const APP_VERSION = '1.0.10';
 function pageFoot() {
   return `<div class="page-foot">国中行银综合录入训练 v${APP_VERSION} · 仅供教学训练使用</div>`;
 }
@@ -633,29 +679,29 @@ function submitCheck(auto) {
   const rows = Array.from(document.querySelectorAll('.input-table tbody tr'));
   const errors = [];   // 格式错误明细
   const diffs = [];    // 与预录不一致明细
-  let correctRows = 0;
   let totalChars = 0;  // 已填写的总字数（空单元格不计）
-  let wrongChars = 0;  // 其中与预录不一致的错字数
+  let wrongChars = 0;  // 其中与预录不一致的错字数（错一个字计 1，不按整行算）
 
   rows.forEach((tr, i) => {
     const row = PRELOADED[i];
-    let rowOk = true;
-    Array.from(tr.querySelectorAll('input')).forEach(inp => {
+    const inputs = Array.from(tr.querySelectorAll('input'));
+    // 整行一个字都没写：这些格子不做任何标记（不填“漏”，保持空白）
+    const rowAllEmpty = inputs.every(inp => !inp.value.trim());
+    inputs.forEach(inp => {
       inp.classList.remove('error');
       const col = inp.dataset.col;
       const val = inp.value.trim();
       const label = COLUMNS.find(c => c.key === col).label;
+      const expect = col === 'cur' ? row.cur.num : row[col];
 
       // —— 格式校验 ——
       let msg = null;
       if (!val) {
-        // 空字段：标红框、该行计错，但不在明细中罗列“不能为空”（避免大片空白时刷屏）
-        inp.classList.add('error');
-        rowOk = false;
+        // 空字段：仅当本行有填写其他内容时才以“漏”填充；整行全空则不标记
+        if (!rowAllEmpty) markCellError(inp, '', String(expect));
         return;
       }
       // —— 错字统计（只统计已填写的内容）——
-      const expect = col === 'cur' ? row.cur.num : row[col];
       totalChars += val.length;
       wrongChars += charDiff(val, String(expect));
       if (col === 'id' && !/^\d+$/.test(val)) {
@@ -673,37 +719,32 @@ function submitCheck(auto) {
       }
 
       if (msg) {
-        inp.classList.add('error');
+        markCellError(inp, val, String(expect));
         errors.push(msg);
-        rowOk = false;
         return;
       }
 
       // —— 与预录入信息逐格核对 ——
       if (val !== String(expect)) {
-        inp.classList.add('error');
+        markCellError(inp, val, String(expect));
         diffs.push(`第 ${i + 1} 行「${label}」录入为「${esc(val)}」，预录入信息为「${esc(expect)}」`);
-        rowOk = false;
       }
     });
-
-    if (rowOk) correctRows++;
   });
 
-  // —— 准确率统计 ——
+  // —— 字级统计：准确率按“字”算（错一个字计 1，不按整行）——
   const total = rows.length;
-  const wrongRows = total - correctRows;
-  const pct = (correctRows / total * 100).toFixed(1);
+  const acc = totalChars ? ((totalChars - wrongChars) / totalChars * 100).toFixed(1) : '0.0';
   // 录入速度：总字数 ÷ 训练总时长（固定 10 分钟）
   const speed = totalChars ? (totalChars / (TIMER_SECONDS / 60)).toFixed(1) : '0.0';
   // 差错率：每千字错字数
   const errPerK = totalChars ? (wrongChars / totalChars * 1000).toFixed(1) : '0.0';
-  const head = `${auto ? '⏱ 时间到，已自动统计：' : '📊 核对结果：'}共 ${total} 条 · 正确 ${correctRows} 条 · 错误 ${wrongRows} 条 · 准确率 ${pct}% · 总字数 ${totalChars} · 错字 ${wrongChars} · 差错率 ${errPerK} 字/千字`;
+  const head = `${auto ? '⏱ 时间到，已自动统计：' : '📊 核对结果：'}共 ${total} 条 · 总字数 ${totalChars} · 错字 ${wrongChars} · 准确率 ${acc}% · 差错率 ${errPerK} 字/千字`;
 
   // 弹出成绩单：录入速度 / 差错率 / 等级判定
   showGradeModal(speed, errPerK);
 
-  if (wrongRows === 0) {
+  if (wrongChars === 0) {
     result.innerHTML = `<div class="bar ok">${head}</div>`;
     return;
   }
@@ -716,12 +757,16 @@ function submitCheck(auto) {
     </div>
     <ul>${details.map(d => `<li>${d}</li>`).join('')}</ul>`;
   $('#btnFix').addEventListener('click', () => {
-    document.querySelector('.input-table input.error')?.focus();
+    // 定位到第一个错误格：点击高亮层恢复编辑并聚焦
+    const first = document.querySelector('.cell-diff');
+    if (first) first.click();
   });
 }
 
 function resetInputs() {
+  document.querySelectorAll('.cell-diff').forEach(d => d.remove());
   document.querySelectorAll('.input-table input').forEach(inp => {
+    inp.style.display = '';
     inp.value = '';
     inp.classList.remove('error');
   });

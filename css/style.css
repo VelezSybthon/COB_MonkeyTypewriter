@@ -565,7 +565,23 @@ table.data-table {
 }
 .section-head { flex-wrap: wrap; }
 
-/* ---------------- 录入结果：错误单元格红框红字（不再整行染色） ---------------- */
+/* ---------------- 录入结果：错误单元格逐字高亮（错字标红、漏字“漏”填充） ---------------- */
+.cell-diff {
+  font-size: 13px;
+  font-family: inherit;
+  padding: 7px 8px;
+  min-height: 32px;
+  text-align: left;
+  white-space: pre-wrap;
+  word-break: break-all;
+  cursor: pointer;
+  background: #fff;
+  border: 1px solid var(--border-strong);
+  border-radius: 5px;
+}
+.cell-diff .c-ok   { color: var(--text); }
+.cell-diff .c-err  { color: var(--err); font-weight: 600; }
+.cell-diff .c-omit { color: var(--err); font-weight: 600; }
 
 /* 描边按钮（提交核对） */
 .btn-outline {
