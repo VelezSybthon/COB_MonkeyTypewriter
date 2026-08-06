@@ -281,13 +281,13 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(preB.scrollTop === Math.round(270 * 1200 / 2700), `反向联动（实测 ${preB.scrollTop}）`);
 
   console.log('21) 页面底部版本号');
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.11'), '训练页底部显示版本 v1.0.11');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.12'), '训练页底部显示版本 v1.0.12');
   window.location.hash = '#/chinese-training';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.11'), '中文训练页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.12'), '中文训练页底部显示版本号');
   window.location.hash = '#/new-practice-1';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.11'), '占位页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.12'), '占位页底部显示版本号');
 
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);

@@ -27,13 +27,13 @@ const EXERCISES = [
   },
   {
     id: 'new-practice-1',
-    name: '新练习（待添加）',
+    name: '内部使用',
     icon: '新',
     placeholder: true,
   },
   {
     id: 'new-practice-2',
-    name: '新练习（待添加）',
+    name: '请勿外传',
     icon: '新',
     placeholder: true,
   },
@@ -479,7 +479,7 @@ function render() {
 /* ---------------- 版本号 ----------------
  * 约定：每次 git push 发布后，小版本 +0.0.1（如 1.0.2 → 1.0.3）
  */
-const APP_VERSION = '1.0.11';
+const APP_VERSION = '1.0.12';
 function pageFoot() {
   return `<div class="page-foot">国中行银综合录入训练 v${APP_VERSION} · 仅供教学训练使用</div>`;
 }
