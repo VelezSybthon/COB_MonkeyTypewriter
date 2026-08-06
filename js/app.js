@@ -479,7 +479,7 @@ function render() {
 /* ---------------- 版本号 ----------------
  * 约定：每次 git push 发布后，小版本 +0.0.1（如 1.0.2 → 1.0.3）
  */
-const APP_VERSION = '1.0.10';
+const APP_VERSION = '1.0.11';
 function pageFoot() {
   return `<div class="page-foot">国中行银综合录入训练 v${APP_VERSION} · 仅供教学训练使用</div>`;
 }
@@ -659,6 +659,7 @@ function resetTraining() {
   timer.remaining = TIMER_SECONDS;
   timer.started = false;
   timer.finished = false;
+  scrollSyncEnabled = false; // 新一轮训练未开始：关闭滚动联动
   resetInputs();
   updateTimerUI();
 }
@@ -676,11 +677,27 @@ function submitCheck(auto) {
     return;
   }
 
+  // 清除上一轮的错误高亮层并恢复输入框（避免重复提交时累积“多出输入框”）
+  document.querySelectorAll('.cell-diff').forEach(d => d.remove());
+  document.querySelectorAll('.input-table input').forEach(inp => { inp.style.display = ''; });
+
+  // 提交后两表同步回顶，保证预录入区与录入区显示一致
+  document.querySelectorAll('.box-pre, .box-input').forEach(box => {
+    box.scrollTop = 0;
+    box.scrollLeft = 0;
+  });
+
   const rows = Array.from(document.querySelectorAll('.input-table tbody tr'));
   const errors = [];   // 格式错误明细
   const diffs = [];    // 与预录不一致明细
   let totalChars = 0;  // 已填写的总字数（空单元格不计）
   let wrongChars = 0;  // 其中与预录不一致的错字数（错一个字计 1，不按整行算）
+
+  // 录入/计分截止到最后一个有内容的格子：其后的空格子不再显示“漏”
+  const allInputs = Array.from(document.querySelectorAll('.input-table tbody input'));
+  let lastFilledIdx = -1;
+  allInputs.forEach((inp, idx) => { if (inp.value.trim()) lastFilledIdx = idx; });
+  let inputIdx = -1;
 
   rows.forEach((tr, i) => {
     const row = PRELOADED[i];
@@ -688,6 +705,8 @@ function submitCheck(auto) {
     // 整行一个字都没写：这些格子不做任何标记（不填“漏”，保持空白）
     const rowAllEmpty = inputs.every(inp => !inp.value.trim());
     inputs.forEach(inp => {
+      inputIdx++;
+      if (inputIdx > lastFilledIdx) return; // 截止格之后的格子：不标记、不计分
       inp.classList.remove('error');
       const col = inp.dataset.col;
       const val = inp.value.trim();
@@ -743,6 +762,9 @@ function submitCheck(auto) {
 
   // 弹出成绩单：录入速度 / 差错率 / 等级判定
   showGradeModal(speed, errPerK);
+
+  // 训练结束（提交/时间到）：开启两表滚动联动
+  scrollSyncEnabled = true;
 
   if (wrongChars === 0) {
     result.innerHTML = `<div class="bar ok">${head}</div>`;
@@ -808,6 +830,35 @@ function bindEnterNavigation() {
   });
 }
 
+/* 预录表与录入表滚动联动：仅在训练结束后启用（提交核对/时间到之后）。
+ * 滚动其中一张，另一张按比例同步滚动（垂直/水平），防循环。 */
+let scrollSyncEnabled = false;
+function syncTableScroll() {
+  const pre = document.querySelector('.box-pre');
+  const input = document.querySelector('.box-input');
+  if (!pre || !input) return;
+  let syncing = false;
+  function link(from, to) {
+    from.addEventListener('scroll', () => {
+      if (!scrollSyncEnabled || syncing) return;
+      syncing = true;
+      const maxFromY = from.scrollHeight - from.clientHeight;
+      const maxToY = to.scrollHeight - to.clientHeight;
+      to.scrollTop = (maxFromY > 0 && maxToY > 0)
+        ? Math.round(from.scrollTop * maxToY / maxFromY)
+        : 0;
+      const maxFromX = from.scrollWidth - from.clientWidth;
+      const maxToX = to.scrollWidth - to.clientWidth;
+      to.scrollLeft = (maxFromX > 0 && maxToX > 0)
+        ? Math.round(from.scrollLeft * maxToX / maxFromX)
+        : 0;
+      syncing = false;
+    });
+  }
+  link(pre, input);
+  link(input, pre);
+}
+
 function initTrainPage() {
   $('#btnResetAll').addEventListener('click', resetTraining);
   $('#btnSubmit').addEventListener('click', () => submitCheck(false));
@@ -820,6 +871,9 @@ function initTrainPage() {
 
   // 滚动幅度缩小 1/3
   tameTableScroll();
+
+  // 预录表与录入表滚动联动
+  syncTableScroll();
 
   // Enter 键在录入表内换格（同行下一格 / 行末下一行首格）
   bindEnterNavigation();

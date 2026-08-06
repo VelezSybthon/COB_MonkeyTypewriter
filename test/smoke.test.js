@@ -95,6 +95,8 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(result.textContent.includes('准确率 99.8%'), '准确率按字算（1-6/3532 = 99.8%）');
   assert(!!result.querySelector('.bar.warn'), '显示警告结果条');
   assert(document.querySelectorAll('.cell-diff').length === 2, '恰好 2 个错误单元格展示逐字高亮');
+  document.getElementById('btnSubmit').click(); // 重复提交：不得累积高亮层
+  assert(document.querySelectorAll('.cell-diff').length === 2, '重复提交不累积高亮层（不会多出输入框）');
   const nameDiff = rows[1].closest('tbody').querySelectorAll('tr')[1].querySelectorAll('td')[1].querySelector('.cell-diff');
   assert(nameDiff && nameDiff.querySelectorAll('.c-err').length === 4, '姓名“错误名字”4 字全部标红（含多打的字）');
   const detail = result.textContent;
@@ -230,14 +232,62 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   const emptyRows = [...document.querySelectorAll('.input-table tbody tr')].slice(1);
   assert(emptyRows.every(tr => !tr.querySelector('.cell-diff')), '整行未写的行不显示漏字填充（保持空白）');
 
-  console.log('18) 页面底部版本号');
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.10'), '训练页底部显示版本 v1.0.10');
+  console.log('18) 最后一个填写格子之后的空格不显示漏（计分截止到当前格子）');
+  document.getElementById('btnResetAll').click();
+  const r0 = [...document.querySelectorAll('.input-table tbody tr')][0];
+  r0.querySelectorAll('input')[0].blur();
+  r0.querySelectorAll('input')[0].focus(); // 启动计时
+  r0.querySelectorAll('input')[0].value = '龙星'; // 期望“龙星通”，漏“通”
+  document.getElementById('btnSubmit').click();
+  const r18 = document.getElementById('checkResult').textContent;
+  assert(r18.includes('错字 0'), `部分填写：漏字不计错字（实测错字 ${r18.match(/错字 (\d+)/)?.[1]}）`);
+  const nmDiff = r0.querySelectorAll('td')[1].querySelector('.cell-diff');
+  assert(nmDiff && nmDiff.textContent === '龙星漏', `姓名格显示“龙星漏”（实测：${nmDiff?.textContent}）`);
+  assert(!r0.querySelectorAll('td')[2].querySelector('.cell-diff'), '同行后续格子（身份证号）不显示漏');
+  assert([...document.querySelectorAll('.input-table tbody tr')].slice(1).every(tr => !tr.querySelector('.cell-diff')), '后续所有行不显示漏');
+
+  console.log('19) 提交核对后两表同步回顶');
+  const preBox = document.querySelector('.box-pre');
+  const inputBox = document.querySelector('.box-input');
+  preBox.scrollTop = 300; inputBox.scrollTop = 300;
+  preBox.scrollLeft = 50; inputBox.scrollLeft = 50;
+  document.getElementById('btnSubmit').click();
+  assert(preBox.scrollTop === 0 && inputBox.scrollTop === 0, '提交后两表垂直回顶');
+  assert(preBox.scrollLeft === 0 && inputBox.scrollLeft === 0, '提交后两表水平归零');
+
+  console.log('20) 滚动联动仅在训练结束后生效');
+  document.getElementById('btnResetAll').click(); // 重新训练：未开始
+  const preB = document.querySelector('.box-pre');
+  const inputB = document.querySelector('.box-input');
+  Object.defineProperty(preB, 'scrollHeight', { value: 1500, configurable: true });
+  Object.defineProperty(inputB, 'scrollHeight', { value: 3000, configurable: true });
+  Object.defineProperty(preB, 'clientHeight', { value: 300, configurable: true });
+  Object.defineProperty(inputB, 'clientHeight', { value: 300, configurable: true });
+  preB.scrollTop = 100; inputB.scrollTop = 0;
+  preB.dispatchEvent(new window.Event('scroll'));
+  assert(inputB.scrollTop === 0, '未开始时滚动不联动');
+  const firstInp20 = [...document.querySelectorAll('.input-table tbody tr')][0].querySelectorAll('input')[0];
+  firstInp20.blur();
+  firstInp20.focus(); // 训练进行中
+  preB.scrollTop = 100; inputB.scrollTop = 0;
+  preB.dispatchEvent(new window.Event('scroll'));
+  assert(inputB.scrollTop === 0, '训练进行中滚动不联动');
+  document.getElementById('btnSubmit').click(); // 训练结束
+  preB.scrollTop = 100;
+  preB.dispatchEvent(new window.Event('scroll'));
+  assert(inputB.scrollTop === Math.round(100 * 2700 / 1200), `提交后联动生效（实测 ${inputB.scrollTop}）`);
+  inputB.scrollTop = 270;
+  inputB.dispatchEvent(new window.Event('scroll'));
+  assert(preB.scrollTop === Math.round(270 * 1200 / 2700), `反向联动（实测 ${preB.scrollTop}）`);
+
+  console.log('21) 页面底部版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.11'), '训练页底部显示版本 v1.0.11');
   window.location.hash = '#/chinese-training';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.10'), '中文训练页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.11'), '中文训练页底部显示版本号');
   window.location.hash = '#/new-practice-1';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.10'), '占位页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.11'), '占位页底部显示版本号');
 
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);
