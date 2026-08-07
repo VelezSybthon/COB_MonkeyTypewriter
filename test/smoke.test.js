@@ -314,6 +314,22 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(JSON.stringify(preNos()) === JSON.stringify(sorted), '关闭乱序后恢复原始顺序');
   window.Math.random = origRandom;
 
+  console.log('23) 更新公告弹窗');
+  const modal23 = document.querySelector('.changelog-mask');
+  assert(modal23, '进入网站自动弹出更新公告');
+  assert(modal23.textContent.includes('v1.0.13'), '弹窗显示 v1.0.13 更新内容');
+  assert(modal23.textContent.includes('乱序模式') && modal23.textContent.includes('编号显隐'), '弹窗含乱序/编号说明');
+  document.querySelector('.changelog-card .btn').click();
+  assert(!document.querySelector('.changelog-mask'), '点击「知道了」关闭弹窗');
+  assert(window.sessionStorage.getItem('boc-changelog-seen') === '1.0.13', '会话标记已写入（刷新不重复弹，新会话再弹）');
+  assert(document.querySelector('#changelogBtn'), '页脚存在「更新公告」按钮');
+  document.querySelector('#changelogBtn').click();
+  const hist23 = document.querySelector('.changelog-mask');
+  assert(hist23, '点击按钮打开公告弹窗');
+  assert(hist23.textContent.includes('版本更新公告') && hist23.textContent.includes('v1.0.13'), '弹窗展示历史版本公告');
+  document.querySelector('.changelog-card .btn').click();
+  assert(!document.querySelector('.changelog-mask'), '历史弹窗可关闭');
+
   console.log('21) 页面底部版本号');
   assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.13'), '训练页底部显示版本 v1.0.13');
   window.location.hash = '#/chinese-training';

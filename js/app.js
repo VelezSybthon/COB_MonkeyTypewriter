@@ -1,5 +1,5 @@
 /* =========================================================
-   国中行银 · 综合录入训练 —— 交互逻辑
+   低保银行 · 综合录入训练 —— 交互逻辑
    ========================================================= */
 'use strict';
 
@@ -499,7 +499,57 @@ function render() {
  */
 const APP_VERSION = '1.0.13';
 function pageFoot() {
-  return `<div class="page-foot">国中行银综合录入训练 v${APP_VERSION} · 仅供教学训练使用</div>`;
+  return `<div class="page-foot">低保银行综合录入训练 v${APP_VERSION} · 仅供教学训练使用 · <button type="button" class="foot-link" id="changelogBtn" title="查看版本更新公告">更新公告</button></div>`;
+}
+
+/* ---------------- 更新公告弹窗 ----------------
+ * 1) 每次「进入网站」（新会话）自动弹出当前版本的更新内容，本会话内不再重复；
+ *    关闭浏览器/标签页后重新打开（新会话）会再次弹出。
+ * 2) 页脚「更新公告」按钮可随时打开，下拉查看全部历史版本更新内容。
+ * 发布新版本时：升级 APP_VERSION，并在 CHANGELOG 中追加对应版本的更新说明。
+ */
+const CHANGELOG = {
+  '1.0.13': [
+    '新增「乱序模式」：打乱题库内的行顺序（每套题库各自打乱），防止按位置记忆；切换题库或点击「重新训练」时重新打乱，可随时关闭恢复原序。',
+    '新增「编号显隐」开关：一键隐藏/显示预录表币别栏的红色数字编号，隐藏后仅凭字母代码填写，方便练习记忆。',
+    '增加搜索引擎屏蔽（noindex + robots.txt）：本系统为内部训练使用，避免被搜索引擎收录。',
+  ],
+};
+
+/* 打开公告弹窗：all=true 展示全部历史版本（最新在前，可下拉查看）；false 只展示当前版本 */
+function showChangelogModal(all) {
+  const entries = all
+    ? Object.entries(CHANGELOG).reverse()
+    : Object.entries(CHANGELOG).filter(([v]) => v === APP_VERSION);
+  if (!entries.length) return;
+  const listHtml = entries.map(([v, notes]) => `
+      <div class="changelog-item">
+        <div class="changelog-ver">v${esc(v)}</div>
+        <ul>${notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul>
+      </div>`).join('');
+  const mask = document.createElement('div');
+  mask.className = 'changelog-mask';
+  mask.innerHTML = `
+    <div class="changelog-card">
+      <h3>${all ? '版本更新公告' : '更新公告'}${all ? '' : ` <span class="changelog-ver">v${esc(APP_VERSION)}</span>`}</h3>
+      ${listHtml}
+      <button type="button" class="btn btn-primary">${all ? '关闭' : '知道了'}</button>
+    </div>`;
+  const close = () => mask.remove();
+  mask.querySelector('.btn').addEventListener('click', close);
+  mask.addEventListener('click', e => { if (e.target === mask) close(); });
+  document.body.appendChild(mask);
+}
+
+/* 进入网站自动弹一次（会话级记忆：同一会话内不重复） */
+function maybeShowChangelog() {
+  let seen = false;
+  try {
+    seen = sessionStorage.getItem('boc-changelog-seen') === APP_VERSION;
+    if (!seen) sessionStorage.setItem('boc-changelog-seen', APP_VERSION);
+  } catch (e) { /* 隐私模式等存储不可用：仍弹一次 */ }
+  if (seen) return;
+  showChangelogModal(false);
 }
 
 /* ---------------- 中文训练页（开发中） ---------------- */
@@ -969,4 +1019,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initSidebar();
   window.addEventListener('hashchange', render);
   render();
+  maybeShowChangelog(); // 更新公告：每次进入网站弹一次，本会话内不重复
+  // 页脚「更新公告」按钮：事件委托（每页渲染后按钮都会重建）
+  document.addEventListener('click', e => {
+    if (e.target.closest('#changelogBtn')) showChangelogModal(true);
+  });
 });

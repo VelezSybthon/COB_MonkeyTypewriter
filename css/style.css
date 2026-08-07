@@ -1,5 +1,5 @@
 /* =========================================================
-   国中行银 · 综合录入训练 —— 样式表
+   低保银行 · 综合录入训练 —— 样式表
    ========================================================= */
 
 :root {
@@ -603,3 +603,77 @@ table.data-table {
   /* 侧边栏不随窗口宽度自动收起；宽度不足时表格在框内横向滚动 */
 }
 
+
+/* ---------------- 更新公告弹窗 ---------------- */
+.changelog-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.changelog-card {
+  width: min(520px, calc(100vw - 48px));
+  max-height: 80vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 10px;
+  padding: 26px 28px 22px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+.changelog-card h3 {
+  margin: 0 0 14px;
+  font-size: 20px;
+  color: var(--boc-red);
+}
+.changelog-card h3 .changelog-ver {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-sub);
+  background: #f2f2f2;
+  border-radius: 4px;
+  padding: 2px 8px;
+  margin-left: 6px;
+  vertical-align: 2px;
+}
+.changelog-card ul {
+  margin: 0 0 18px;
+  padding-left: 20px;
+  line-height: 1.8;
+  color: var(--text-main);
+  font-size: 14px;
+}
+.changelog-card .btn {
+  display: block;
+  margin: 0 auto;
+  min-width: 120px;
+}
+
+/* 页脚「更新公告」链接按钮 */
+.foot-link {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  color: var(--boc-red);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: inherit;
+}
+.foot-link:hover { color: #8f161a; }
+
+/* 公告弹窗：历史版本条目（下拉查看） */
+.changelog-item + .changelog-item {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px dashed #ddd;
+}
+.changelog-item .changelog-ver {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--boc-red);
+  margin-bottom: 6px;
+}
+.changelog-item ul { margin: 0 0 0; padding-left: 20px; }
