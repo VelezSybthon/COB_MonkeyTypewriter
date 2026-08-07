@@ -541,6 +541,8 @@ table.data-table {
   margin-left: 5px;
   font-size: 14px;
 }
+/* 关闭「编号：隐藏」后，预录表币别栏不再显示红色编号 */
+.box-pre.hide-cur-num .cur-num { display: none; }
 
 /* ---------------- 倒计时 ---------------- */
 .timer { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }

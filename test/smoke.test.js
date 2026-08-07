@@ -161,7 +161,7 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   assert(document.querySelector('.pre-table tbody tr'), '返回后重新渲染综合录入训练页');
 
   console.log('12) 题库切换（共 3 套）');
-  assert(document.querySelectorAll('.bank-btn').length === 3, '综合训练页含 3 个题库按钮');
+  assert(document.querySelectorAll('.bank-btn[data-bank]').length === 3, '综合训练页含 3 个题库按钮');
   assert(document.querySelector('.bank-btn.active')?.dataset.bank === '0', '默认第 1 套激活');
   assert(document.querySelector('.pre-table tbody tr td:nth-child(2)').textContent === '龙星通', '第 1 套预录首行姓名');
   document.querySelectorAll('.bank-btn')[1].click();
@@ -280,14 +280,48 @@ document.dispatchEvent(new window.Event('DOMContentLoaded'));
   inputB.dispatchEvent(new window.Event('scroll'));
   assert(preB.scrollTop === Math.round(270 * 1200 / 2700), `反向联动（实测 ${preB.scrollTop}）`);
 
+  console.log('22) 乱序模式与币别编号显隐');
+  window.location.hash = '#/train';
+  window.dispatchEvent(new window.HashChangeEvent('hashchange'));
+  const origRandom = window.Math.random;
+  window.Math.random = () => 0; // 确定性打乱：顺序必然改变，且各次结果一致
+  const preNos = () => [...document.querySelectorAll('.pre-table tbody tr td:first-child')].map(td => td.textContent.trim());
+  const inpNos = () => [...document.querySelectorAll('.input-table tbody tr .row-no')].map(td => td.textContent.trim());
+  const sorted = Array.from({ length: 50 }, (_, i) => String(i + 1));
+  assert(JSON.stringify(preNos()) === JSON.stringify(sorted), '初始为原始顺序');
+  assert(document.querySelectorAll('.cur-num').length === 50, '币别编号默认显示（50 个）');
+  document.getElementById('shuffleToggle').click();
+  const shuffled = preNos();
+  assert(JSON.stringify(shuffled) !== JSON.stringify(sorted), '乱序后行顺序改变');
+  assert(inpNos().join(',') === shuffled.join(','), '录入表序号列与预录表编号一致');
+  document.getElementById('curNumToggle').click();
+  assert(document.querySelector('.box-pre').classList.contains('hide-cur-num'), '隐藏编号后 box-pre 带 hide-cur-num 类');
+  document.getElementById('curNumToggle').click();
+  assert(!document.querySelector('.box-pre').classList.contains('hide-cur-num'), '恢复显示编号');
+  // 乱序下全对提交 → 100%
+  const preData22 = [...document.querySelectorAll('.pre-table tbody tr')].map(tr => [...tr.querySelectorAll('td')].map(td => {
+    const n = td.querySelector('.cur-num');
+    return n ? n.textContent : td.textContent;
+  }));
+  const rows22 = document.querySelectorAll('.input-table tbody tr');
+  rows22.forEach((tr, i) => { const ins = tr.querySelectorAll('input'); for (let k = 0; k < ins.length; k++) ins[k].value = preData22[i][k + 1]; });
+  const firstInp22 = rows22[0].querySelector('input');
+  firstInp22.blur();
+  firstInp22.focus();
+  document.getElementById('btnSubmit').click();
+  assert(document.getElementById('checkResult').textContent.includes('100.0%'), '乱序下全部填对 → 准确率 100%');
+  document.getElementById('shuffleToggle').click(); // 关闭乱序
+  assert(JSON.stringify(preNos()) === JSON.stringify(sorted), '关闭乱序后恢复原始顺序');
+  window.Math.random = origRandom;
+
   console.log('21) 页面底部版本号');
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.12'), '训练页底部显示版本 v1.0.12');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.13'), '训练页底部显示版本 v1.0.13');
   window.location.hash = '#/chinese-training';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.12'), '中文训练页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.13'), '中文训练页底部显示版本号');
   window.location.hash = '#/new-practice-1';
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.12'), '占位页底部显示版本号');
+  assert(document.querySelector('.page-foot')?.textContent.includes('v1.0.13'), '占位页底部显示版本号');
 
   console.log(failures === 0 ? '\n全部通过 ✔' : `\n${failures} 项失败 ✘`);
   process.exit(failures === 0 ? 0 : 1);

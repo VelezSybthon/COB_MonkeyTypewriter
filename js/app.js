@@ -298,6 +298,24 @@ const QUESTION_BANKS = [BANK_1, BANK_2, BANK_3];
 let currentBank = 0;
 let PRELOADED = QUESTION_BANKS[currentBank];
 
+/* 练习辅助开关 */
+let shuffleMode = false;   // 乱序模式：打乱当前题库的行顺序（防止路径依赖）
+let showCurNum = true;     // 是否在预录表显示币别红色数字编号
+let currentRows = PRELOADED.slice(); // 当前实际展示顺序的行数组（乱序时为打乱后的副本）
+
+function shuffleArr(src) {
+  const a = src.slice();
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+function applyOrder() {
+  currentRows = shuffleMode ? shuffleArr(PRELOADED) : PRELOADED.slice();
+}
+
 function switchBank(idx) {
   if (idx === currentBank || idx < 0 || idx >= QUESTION_BANKS.length) return;
   currentBank = idx;
@@ -479,7 +497,7 @@ function render() {
 /* ---------------- 版本号 ----------------
  * 约定：每次 git push 发布后，小版本 +0.0.1（如 1.0.2 → 1.0.3）
  */
-const APP_VERSION = '1.0.12';
+const APP_VERSION = '1.0.13';
 function pageFoot() {
   return `<div class="page-foot">国中行银综合录入训练 v${APP_VERSION} · 仅供教学训练使用</div>`;
 }
@@ -521,13 +539,13 @@ function renderPlaceholder(ex) {
 }
 
 /* ---------------- 综合录入训练页 ---------------- */
-function renderTrainPage() {
+/* 生成预录表 / 录入表两张表格的 HTML（基于 currentRows，预录与录入共用同一列宽保证对齐） */
+function trainTablesHtml() {
   const head = COLUMNS.map(c => `<th>${c.label}</th>`).join('');
-  // 两个表格共用同一列宽定义，保证上下对齐
   const colGroup = `<colgroup>${COLUMNS.map(c => `<col class="c-${c.key}">`).join('')}</colgroup>`;
 
-  // 预录入信息表：币别列显示“字母代码 + 红色加粗数字编号”
-  const preRows = PRELOADED.map(r => `
+  // 预录入信息表：币别列显示“字母代码 + 红色加粗数字编号”（编号可隐藏）
+  const preRows = currentRows.map(r => `
     <tr>
       ${COLUMNS.map(c => {
         let cell;
@@ -540,10 +558,10 @@ function renderTrainPage() {
       }).join('')}
     </tr>`).join('');
 
-  // 录入表（空白输入框，币别列要求填写数字代码）
-  const inputRows = PRELOADED.map((r, i) => `
+  // 录入表（空白输入框，币别列要求填写数字代码）；序号列与预录表同一编号，乱序时保持一致
+  const inputRows = currentRows.map((r, i) => `
     <tr data-row="${i}">
-      <td class="row-no">${i + 1}</td>
+      <td class="row-no">${esc(r.no)}</td>
       ${COLUMNS.slice(1).map(c => {
         const ph = c.key === 'addr' ? '请输入地址'
                  : c.key === 'cur' ? '数字代码，如 18'
@@ -556,6 +574,37 @@ function renderTrainPage() {
         </td>`;
       }).join('')}
     </tr>`).join('');
+
+  return {
+    pre: `
+      <table class="data-table pre-table">
+        ${colGroup}
+        <thead><tr>${head}</tr></thead>
+        <tbody>${preRows}</tbody>
+      </table>`,
+    input: `
+      <table class="data-table input-table">
+        ${colGroup}
+        <thead><tr>${head}</tr></thead>
+        <tbody>${inputRows}</tbody>
+      </table>`,
+  };
+}
+
+/* 仅刷新两张表格（预录 / 录入），用于重新训练后应用新顺序，不重建整页 */
+function refreshTrainTables() {
+  const pre = document.querySelector('.box-pre');
+  const input = document.querySelector('.box-input');
+  if (!pre || !input) return;
+  const t = trainTablesHtml();
+  pre.innerHTML = t.pre;
+  input.innerHTML = t.input;
+}
+
+/* 训练页渲染 */
+function renderTrainPage() {
+  // 两张表格共用同一列宽定义（trainTablesHtml 生成），保证上下对齐
+  const tables = trainTablesHtml();
 
   return `
     <div class="page-head">
@@ -572,16 +621,14 @@ function renderTrainPage() {
             ${QUESTION_BANKS.map((b, i) => `
               <button type="button" class="bank-btn${i === currentBank ? ' active' : ''}" data-bank="${i}">第 ${i + 1} 套</button>`).join('')}
           </div>
-          <span class="hint">共 ${PRELOADED.length} 条 · 框内可滚动查看 · 币别栏红色数字为编号，录入时填写该编号</span>
+          <button type="button" class="bank-btn${shuffleMode ? ' active' : ''}" id="shuffleToggle" title="打乱题库内的行顺序，防止按位置记忆">乱序：${shuffleMode ? '开' : '关'}</button>
+          <button type="button" class="bank-btn${showCurNum ? ' active' : ''}" id="curNumToggle" title="切换预录表币别栏红色编号的显示">编号：${showCurNum ? '显示' : '隐藏'}</button>
+          <span class="hint">共 ${currentRows.length} 条 · 框内可滚动查看 · 币别栏红色数字为编号，录入时填写该编号</span>
         </div>
       </div>
       <div class="section-body">
-        <div class="table-wrap box-pre">
-          <table class="data-table pre-table">
-            ${colGroup}
-            <thead><tr>${head}</tr></thead>
-            <tbody>${preRows}</tbody>
-          </table>
+        <div class="table-wrap box-pre${showCurNum ? '' : ' hide-cur-num'}">
+          ${tables.pre}
         </div>
       </div>
     </section>
@@ -597,11 +644,7 @@ function renderTrainPage() {
       </div>
       <div class="section-body">
         <div class="table-wrap box-input">
-          <table class="data-table input-table">
-            ${colGroup}
-            <thead><tr>${head}</tr></thead>
-            <tbody>${inputRows}</tbody>
-          </table>
+          ${tables.input}
         </div>
         <p class="focus-hint">💡 将光标移入录入表格即自动开始计时，焦点移出表格自动暂停；时间归零自动提交核对。</p>
         <div class="actions">
@@ -660,8 +703,29 @@ function resetTraining() {
   timer.started = false;
   timer.finished = false;
   scrollSyncEnabled = false; // 新一轮训练未开始：关闭滚动联动
+  applyOrder(); // 乱序模式：重新打乱当前题库；关闭时恢复原始顺序
   resetInputs();
   updateTimerUI();
+  refreshTrainTables(); // 把新顺序应用到两张表格
+}
+
+/* 乱序模式开关：切换后打乱 / 恢复顺序，并重置训练 */
+function toggleShuffle() {
+  shuffleMode = !shuffleMode;
+  resetTraining();
+  render();
+}
+
+/* 币别编号显隐开关：只改展示（CSS 类），不重置训练、不丢失已录入内容 */
+function toggleCurNum() {
+  showCurNum = !showCurNum;
+  const box = document.querySelector('.box-pre');
+  if (box) box.classList.toggle('hide-cur-num', !showCurNum);
+  const btn = $('#curNumToggle');
+  if (btn) {
+    btn.textContent = `编号：${showCurNum ? '显示' : '隐藏'}`;
+    btn.classList.toggle('active', showCurNum);
+  }
 }
 
 function stopTimer() {
@@ -700,7 +764,7 @@ function submitCheck(auto) {
   let inputIdx = -1;
 
   rows.forEach((tr, i) => {
-    const row = PRELOADED[i];
+    const row = currentRows[i];
     const inputs = Array.from(tr.querySelectorAll('input'));
     // 整行一个字都没写：这些格子不做任何标记（不填“漏”，保持空白）
     const rowAllEmpty = inputs.every(inp => !inp.value.trim());
@@ -865,9 +929,15 @@ function initTrainPage() {
   $('#btnReset').addEventListener('click', resetInputs);
 
   // 题库切换：点击后切换当前题库并重置训练
-  document.querySelectorAll('.bank-btn').forEach(btn => {
+  document.querySelectorAll('.bank-btn[data-bank]').forEach(btn => {
     btn.addEventListener('click', () => switchBank(Number(btn.dataset.bank)));
   });
+
+  // 乱序模式 / 币别编号显隐
+  const shuffleBtn = $('#shuffleToggle');
+  if (shuffleBtn) shuffleBtn.addEventListener('click', toggleShuffle);
+  const curNumBtn = $('#curNumToggle');
+  if (curNumBtn) curNumBtn.addEventListener('click', toggleCurNum);
 
   // 滚动幅度缩小 1/3
   tameTableScroll();
